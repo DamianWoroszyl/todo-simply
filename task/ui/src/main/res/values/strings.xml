@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="task_action_delete">Delete</string>
+    <string name="task_action_duplicate">Duplicate</string>
+    <string name="task_action_schedule">Schedule</string>
+    <string name="task_action_edit">Edit</string>
+
+</resources>

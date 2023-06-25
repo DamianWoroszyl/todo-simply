@@ -1,23 +1,27 @@
 plugins {
     id("todosimply.android.library")
     id("todosimply.jetbrains.kotlin.android")
+    id("todosimply.android.compose")
 }
 
 android {
-    namespace = "com.fullrandomstudio.designsystem"
+    namespace = "com.fullrandomstudio.todosimply.designsystem"
 
     defaultConfig {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 }
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.8.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.9.0")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    implementation(libs.androidx.core.ktx)
+
+    implementation(libs.androidx.compose.ui.ui)
+    implementation(libs.androidx.compose.ui.ui.graphics)
+    implementation(libs.androidx.compose.material3)
+    debugImplementation(libs.androidx.compose.ui.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.ui.tooling.preview)
+
+    testImplementation(libs.junit4)
+    androidTestImplementation(libs.androidx.test.ext)
 }

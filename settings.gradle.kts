@@ -16,6 +16,16 @@ dependencyResolutionManagement {
 }
 rootProject.name = "todo-simply"
 include(":app")
+
 include(":core")
-include(":design-system")
 include(":core:design-system")
+include(":core:util")
+
+include(":task")
+include(":task:data")
+include(":task:ui")
+
+include(":task:domain")
+include(":task:database")
+include(":task:model")
+include(":core:util-android")
