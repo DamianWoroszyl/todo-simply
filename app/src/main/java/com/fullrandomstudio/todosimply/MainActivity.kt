@@ -3,44 +3,23 @@ package com.fullrandomstudio.todosimply
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.fullrandomstudio.todosimply.ui.theme.TodosimplyTheme
+import com.fullrandomstudio.designsystem.theme.TodoSimplyTheme
+import com.fullrandomstudio.task.ui.scheduled.ScheduledTasksPagerScreen
+import dagger.hilt.android.AndroidEntryPoint
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val x = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())
+        x.toString()
         setContent {
-            TodosimplyTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
+            TodoSimplyTheme {
+                ScheduledTasksPagerScreen()
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TodosimplyTheme {
-        Greeting("Android")
     }
 }

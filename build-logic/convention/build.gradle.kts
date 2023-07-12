@@ -10,6 +10,7 @@ java {
 dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
+    compileOnly(libs.ksp.gradlePlugin)
 }
 
 gradlePlugin {
@@ -37,6 +38,10 @@ gradlePlugin {
         register("androidHilt") {
             id = "todosimply.android.hilt"
             implementationClass = "AndroidHiltConventionPlugin"
+        }
+        register("androidRoom") {
+            id = "todosimply.android.room"
+            implementationClass = "AndroidRoomConventionPlugin"
         }
     }
 }
