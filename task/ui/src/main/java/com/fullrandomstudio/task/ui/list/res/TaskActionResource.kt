@@ -2,7 +2,7 @@ package com.fullrandomstudio.task.ui.list.res
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.fullrandomstudio.todosimply.task.data.constant.TaskAction
+import com.fullrandomstudio.todosimply.task.data.config.TaskAction
 import com.fullrandomstudio.todosimply.task.ui.R
 
 data class TaskActionResources(

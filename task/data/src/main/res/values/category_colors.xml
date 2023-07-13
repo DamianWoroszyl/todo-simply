@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <array name="category_colors_grey">
+        <item>#90A4AE</item>
+        <item>#78909C</item>
+        <item>#607D8B</item>
+        <item>#546E7A</item>
+        <item>#455A64</item>
+        <item>#37474F</item>
+        <item>#263238</item>
+    </array>
+
+    <array name="category_colors_orange">
+        <item>#FFCC80</item>
+        <item>#FFB74D</item>
+        <item>#FFA726</item>
+        <item>#FF9800</item>
+        <item>#FB8C00</item>
+        <item>#F57C00</item>
+        <item>#EF6C00</item>
+    </array>
+
+    <array name="category_colors_red">
+        <item>#E57373</item>
+        <item>#EF5350</item>
+        <item>#F44336</item>
+        <item>#E53935</item>
+        <item>#D32F2F</item>
+        <item>#C62828</item>
+        <item>#B71C1C</item>
+    </array>
+
+    <array name="category_colors_pink">
+        <item>#F06292</item>
+        <item>#EC407A</item>
+        <item>#E91E63</item>
+        <item>#D81B60</item>
+        <item>#C2185B</item>
+        <item>#AD1457</item>
+        <item>#880E4F</item>
+    </array>
+
+    <array name="category_colors_purple">
+        <item>#BA68C8</item>
+        <item>#AB47BC</item>
+        <item>#9C27B0</item>
+        <item>#8E24AA</item>
+        <item>#7B1FA2</item>
+        <item>#6A1B9A</item>
+        <item>#4A148C</item>
+    </array>
+
+    <array name="category_colors_blue">
+        <item>#64B5F6</item>
+        <item>#42A5F5</item>
+        <item>#2196F3</item>
+        <item>#1E88E5</item>
+        <item>#1976D2</item>
+        <item>#1565C0</item>
+        <item>#0D47A1</item>
+    </array>
+
+    <array name="category_colors_cyan">
+        <item>#80DEEA</item>
+        <item>#4DD0E1</item>
+        <item>#26C6DA</item>
+        <item>#00BCD4</item>
+        <item>#00ACC1</item>
+        <item>#0097A7</item>
+        <item>#00838F</item>
+    </array>
+
+    <array name="category_colors_green">
+        <item>#A5D6A7</item>
+        <item>#81C784</item>
+        <item>#66BB6A</item>
+        <item>#4CAF50</item>
+        <item>#43A047</item>
+        <item>#388E3C</item>
+        <item>#2E7D32</item>
+    </array>
+
+</resources>

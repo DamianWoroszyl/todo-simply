@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.fullrandomstudio.task.model.DateRange
 import com.fullrandomstudio.task.ui.list.item.TaskListItemUiState
 import com.fullrandomstudio.task.ui.list.item.TasksListItem
-import com.fullrandomstudio.todosimply.task.data.constant.TaskAction
+import com.fullrandomstudio.todosimply.task.data.config.TaskAction
 import com.fullrandomstudio.todosimply.task.data.repository.TaskRepository
 import com.fullrandomstudio.todosimply.utilandroid.stateInViewModel
 import dagger.assisted.Assisted

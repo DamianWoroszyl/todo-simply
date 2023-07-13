@@ -1,4 +1,4 @@
-package com.fullrandomstudio.todosimply.task.data.constant
+package com.fullrandomstudio.todosimply.task.data.config
 
 enum class TaskAction {
     DELETE,

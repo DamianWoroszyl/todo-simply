@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="base_category_home">Home</string>
+    <string name="base_category_work">Work</string>
+    <string name="base_category_workout">Workout</string>
+    <string name="base_category_diet">Diet</string>
+    <string name="base_category_default">Basic</string>
+    <string name="base_category_finance">Finance</string>
+    <string name="base_category_personal">Personal</string>
+</resources>

@@ -31,6 +31,8 @@ dependencies {
 
     implementation(project(":task:ui"))
     implementation(project(":core:design-system"))
+    implementation(project(":core:initializer"))
+    implementation(project(":core:common"))
 
     implementation(platform(libs.kotlin.bom))
     implementation(libs.androidx.core.ktx)
@@ -43,6 +45,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.ui.graphics)
 
     implementation(libs.androidx.compose.material3)
+
+    implementation(libs.timber)
 
     testImplementation(libs.junit4)
     androidTestImplementation(libs.androidx.test.ext)
