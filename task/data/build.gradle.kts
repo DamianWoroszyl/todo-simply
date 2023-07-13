@@ -6,17 +6,17 @@ plugins {
 
 android {
     namespace = "com.fullrandomstudio.todosimply.task.data"
-
-    defaultConfig {
-        consumerProguardFiles("consumer-rules.pro")
-    }
 }
 
 dependencies {
     implementation(project(":task:model"))
     implementation(project(":task:database"))
+    implementation(project(":core:common"))
+    implementation(project(":core:initializer"))
 
     implementation(libs.androidx.core.ktx)
+
+    implementation(libs.timber)
 
     testImplementation(libs.junit4)
     androidTestImplementation(libs.androidx.test.ext)

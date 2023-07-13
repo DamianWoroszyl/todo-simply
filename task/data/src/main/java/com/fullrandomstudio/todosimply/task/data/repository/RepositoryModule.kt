@@ -5,12 +5,13 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 
-
 @InstallIn(SingletonComponent::class)
 @Module
 interface RepositoryModule {
 
     @Binds
-    fun bindTaskRepository(offlineTaskRepository: OfflineTaskRepository): TaskRepository
+    fun bindTaskRepository(repository: OfflineTaskRepository): TaskRepository
 
+    @Binds
+    fun bindTaskCategoryRepository(repository: OfflineTaskCategoryRepository): TaskCategoryRepository
 }

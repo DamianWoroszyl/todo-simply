@@ -1,0 +1,9 @@
+<resources>
+    <string name="base_category_home">Dom</string>
+    <string name="base_category_work">Praca</string>
+    <string name="base_category_workout">Ćwiczenia</string>
+    <string name="base_category_diet">Dieta</string>
+    <string name="base_category_default">Podstawowe</string>
+    <string name="base_category_finance">Finanse</string>
+    <string name="base_category_personal">Osobiste</string>
+</resources>
