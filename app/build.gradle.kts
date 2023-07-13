@@ -31,6 +31,7 @@ dependencies {
 
     implementation(project(":task:ui"))
     implementation(project(":core:design-system"))
+    implementation(project(":core:common"))
 
     implementation(platform(libs.kotlin.bom))
     implementation(libs.androidx.core.ktx)
