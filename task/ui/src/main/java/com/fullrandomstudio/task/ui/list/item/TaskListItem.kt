@@ -57,6 +57,7 @@ internal fun TaskListItem(
 ) {
 
     Surface(
+        color = MaterialTheme.colorScheme.background,
         modifier = modifier
             .clickable { onClick(state.task.id) }
             .padding(4.dp),
@@ -128,7 +129,7 @@ internal fun TaskListItem(
                         .padding(top = 2.dp, end = 8.dp)
                 )
 
-                if(state.task.isScheduled) {
+                if (state.task.isScheduled) {
                     Text(
                         text = formatTimeLocalized(requireNotNull(state.task.scheduleDate)),
                         style = MaterialTheme.typography.bodyMedium,

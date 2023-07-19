@@ -3,22 +3,32 @@ package com.fullrandomstudio.todosimply
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
 import com.fullrandomstudio.designsystem.theme.TodoSimplyTheme
-import com.fullrandomstudio.task.ui.scheduled.ScheduledTasksPagerScreen
+import com.fullrandomstudio.todosimply.ui.home.navigation.HOME_NAV_ROUTE
+import com.fullrandomstudio.todosimply.ui.home.navigation.homeScreen
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val x = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())
-        x.toString()
+
         setContent {
             TodoSimplyTheme {
-                ScheduledTasksPagerScreen()
+
+                val navController = rememberNavController()
+
+                NavHost(
+                    navController = navController,
+                    startDestination = HOME_NAV_ROUTE,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    homeScreen(navController)
+                }
             }
         }
     }

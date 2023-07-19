@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="label_scheduled_tasks">Zaplanowane zadania</string>
+    <string name="label_general_tasks">Ogólne zadania</string>
+    <string name="label_shopping_lists">Listy zakupowe</string>
+    <string name="label_task_categories">Kategorie</string>
+    <string name="label_settings">Ustawienia</string>
+</resources>

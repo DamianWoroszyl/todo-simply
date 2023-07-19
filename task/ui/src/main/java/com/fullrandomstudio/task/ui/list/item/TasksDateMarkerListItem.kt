@@ -23,6 +23,7 @@ internal fun TasksDateMarkerListItem(
 ) {
 
     Surface(
+        color = MaterialTheme.colorScheme.background,
         modifier = modifier
             .fillMaxWidth()
             .padding(4.dp)
