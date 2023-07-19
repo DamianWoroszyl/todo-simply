@@ -2,6 +2,7 @@ package com.fullrandomstudio.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 
+val DisabledAlpha:Float = 0.38f
 val Transparent = Color(0x00FFFFFF)
 val Debug = Color(0xFF6E9C7B)
 val NotificationLight = Color(0xFF00FFFF)
@@ -24,7 +25,7 @@ val md_theme_light_onError = Color(0xFFFFFFFF)
 val md_theme_light_onErrorContainer = Color(0xFFFFFFFF)
 val md_theme_light_background = Color(0xFFF8F8F8)
 val md_theme_light_onBackground = Color(0xFF607D8B)
-val md_theme_light_surface = Color(0xFFF8F8F8)
+val md_theme_light_surface = Color(0xFFFFFFFF)
 val md_theme_light_onSurface = Color(0xFF607D8B)
 val md_theme_light_surfaceVariant = Color(0xFFF8F8F8)
 val md_theme_light_onSurfaceVariant = Color(0xFF495E68)

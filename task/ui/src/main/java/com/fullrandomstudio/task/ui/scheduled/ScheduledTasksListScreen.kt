@@ -3,6 +3,7 @@ package com.fullrandomstudio.task.ui.scheduled
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -50,9 +51,11 @@ fun ScheduledTasksListScreen(
     modifier: Modifier = Modifier
 ) {
     Surface(
+        color = MaterialTheme.colorScheme.background,
         modifier = modifier.fillMaxSize(),
     ) {
         LazyColumn(
+            modifier.fillMaxSize()
         ) {
             items(
                 items = items,

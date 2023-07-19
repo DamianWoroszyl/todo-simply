@@ -43,6 +43,9 @@ dependencies {
 
     implementation(libs.androidx.compose.ui.ui)
     implementation(libs.androidx.compose.ui.ui.graphics)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
+
 
     implementation(libs.androidx.compose.material3)
 
