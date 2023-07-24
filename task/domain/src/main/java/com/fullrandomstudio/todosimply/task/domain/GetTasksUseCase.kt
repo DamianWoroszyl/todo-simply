@@ -2,8 +2,4 @@ package com.fullrandomstudio.todosimply.task.domain
 
 import javax.inject.Inject
 
-class GetTasksUseCase @Inject constructor(
-
-) {
-
-}
+class GetTasksUseCase @Inject constructor()

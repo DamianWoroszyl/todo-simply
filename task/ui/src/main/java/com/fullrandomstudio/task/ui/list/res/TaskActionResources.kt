@@ -12,7 +12,7 @@ data class TaskActionResources(
 
 fun taskActionResource(taskAction: TaskAction): TaskActionResources {
     return when (taskAction) {
-        TaskAction.DELETE ->
+        TaskAction.delete ->
             TaskActionResources(R.drawable.ic_delete, R.string.task_action_delete)
 
         TaskAction.DUPLICATE ->

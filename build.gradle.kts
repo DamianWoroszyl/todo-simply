@@ -9,4 +9,4 @@ plugins {
     alias(libs.plugins.detekt) apply false
 }
 
-//TODO add jacoco
+// TODO add jacoco

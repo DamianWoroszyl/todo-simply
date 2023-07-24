@@ -12,7 +12,7 @@ class ScheduledTasksPagerViewModel @Inject constructor() : ViewModel() {
     val pageCount = Int.MAX_VALUE
     val initPage = Int.MAX_VALUE / 2
     private val initPageStartDate: LocalDate = LocalDate.now()
-    private val timeRangeType = TimeRangeType.DAY //TODO later get from settings
+    private val timeRangeType = TimeRangeType.DAY // TODO later get from settings
 
     fun onAddTaskClick() {
         TODO("Not yet implemented")

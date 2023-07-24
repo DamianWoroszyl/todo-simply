@@ -103,7 +103,6 @@ fun ScheduledTasksPagerScreen(
     }
 }
 
-
 @EntryPoint
 @InstallIn(ActivityComponent::class)
 interface ViewModelFactoryProvider {
@@ -117,7 +116,8 @@ private fun scheduledTasksListViewModelProviderFactory(
     val activity: Activity = LocalContext.current as Activity
     val viewModelAssistedFactory: ScheduledTasksListViewModelAssistedFactory =
         EntryPointAccessors.fromActivity(
-            activity, ViewModelFactoryProvider::class.java
+            activity,
+            ViewModelFactoryProvider::class.java
         ).scheduledTasksListViewModelFactory()
 
     return ScheduledTasksListViewModel.provideViewModelFactory(

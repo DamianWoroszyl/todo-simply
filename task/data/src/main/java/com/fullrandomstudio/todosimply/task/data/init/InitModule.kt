@@ -14,5 +14,4 @@ internal interface InitModule {
     @Binds
     @IntoSet
     fun bindTaskCategoryInitializer(taskCategoryInitializer: TaskCategoryInitializer): AppInitializer
-
 }

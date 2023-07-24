@@ -1,9 +1,11 @@
 
 import com.fullrandomstudio.convention.buildlogic.todosimply.configureDetekt
+import com.fullrandomstudio.convention.buildlogic.todosimply.libs
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.dependencies
 
 class DetektConventionPlugin : Plugin<Project> {
 
@@ -15,12 +17,9 @@ class DetektConventionPlugin : Plugin<Project> {
                 configureDetekt(this)
             }
 
-            /*
-            todo dw add detekt formatting?
             dependencies {
                 "detektPlugins"(libs.findLibrary("detekt-formatting").get())
             }
-            */
         }
     }
 }

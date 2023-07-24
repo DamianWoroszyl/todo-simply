@@ -27,7 +27,6 @@ import com.fullrandomstudio.todosimply.ui.home.navigation.navigateToHomeSchedule
 fun HomeScreen(
     modifier: Modifier = Modifier,
 ) {
-
     val navController = rememberNavController()
     val currentDestination: NavDestination? = navController
         .currentBackStackEntryAsState().value?.destination
@@ -61,7 +60,6 @@ private fun navigateToDestination(
     navController: NavHostController,
     destination: HomeNavBarDestination
 ) {
-
     val navOptions = navOptions {
         popUpTo(navController.graph.findStartDestination().id) {
             saveState = true

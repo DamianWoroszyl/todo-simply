@@ -23,7 +23,6 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.fullrandomstudio.designsystem.theme.TodoSimplyTheme
 
-
 @Composable
 fun HomeBottomBar(
     onNavigateToDestination: (HomeNavBarDestination) -> Unit,
@@ -82,7 +81,7 @@ fun HomeBottomBarPreview() {
         Column(
             modifier = Modifier.background(MaterialTheme.colorScheme.background)
         ) {
-            //Box to see the shadow
+            // Box to see the shadow
             Box(
                 modifier = Modifier.height(20.dp)
             )

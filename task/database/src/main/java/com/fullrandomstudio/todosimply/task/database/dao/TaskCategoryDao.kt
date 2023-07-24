@@ -14,5 +14,4 @@ interface TaskCategoryDao {
 
     @Query("SELECT COUNT() FROM task_category LIMIT 1")
     suspend fun anyExists(): Boolean
-
 }

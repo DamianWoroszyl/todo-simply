@@ -23,13 +23,17 @@ class TaskUiStateFactory @Inject constructor() {
 
     private fun taskActions(isFinished: Boolean, isScheduled: Boolean): List<TaskAction> {
         val actions: MutableList<TaskAction> =
-            if (isFinished) mutableListOf(
-                TaskAction.DELETE)
-            else mutableListOf(
-                TaskAction.DELETE,
-                TaskAction.EDIT,
-                /*TaskAction.DONE*/
-            )
+            if (isFinished) {
+                mutableListOf(
+                    TaskAction.DELETE
+                )
+            } else {
+                mutableListOf(
+                    TaskAction.DELETE,
+                    TaskAction.EDIT,
+                    /*TaskAction.DONE*/
+                )
+            }
 
         if (!isScheduled && !isFinished) {
             actions.add(TaskAction.GENERAL_TO_SCHEDULED)
