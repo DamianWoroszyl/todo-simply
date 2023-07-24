@@ -11,6 +11,7 @@ dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.ksp.gradlePlugin)
+    compileOnly(libs.detekt.gradlePlugin)
 }
 
 gradlePlugin {
@@ -42,6 +43,10 @@ gradlePlugin {
         register("androidRoom") {
             id = "todosimply.android.room"
             implementationClass = "AndroidRoomConventionPlugin"
+        }
+        register("detekt") {
+            id = "todosimply.kotlin.detekt"
+            implementationClass = "DetektConventionPlugin"
         }
     }
 }

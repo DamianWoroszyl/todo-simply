@@ -3,6 +3,7 @@ plugins {
     id("todosimply.jetbrains.kotlin.android")
     id("todosimply.android.compose")
     id("todosimply.android.hilt")
+    id("todosimply.kotlin.detekt")
 }
 
 android {
