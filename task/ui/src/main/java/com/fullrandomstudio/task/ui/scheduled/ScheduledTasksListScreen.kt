@@ -77,11 +77,11 @@ fun ScheduledTasksListScreen(
     }
 }
 
-private fun TasksListItem.contentType(): Int {
+private fun TasksListItem.contentType(): String {
     return when (this) {
-        is TaskCategoryMarkerListItemUiState -> 1
-        is TaskListItemUiState -> 2
-        is TasksDateMarkerListItemUiState -> 3
+        is TaskCategoryMarkerListItemUiState -> "task-category"
+        is TaskListItemUiState -> "task"
+        is TasksDateMarkerListItemUiState -> "date-marker"
     }
 }
 

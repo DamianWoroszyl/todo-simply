@@ -180,7 +180,8 @@ internal fun TaskListItem(
 
 }
 
-//TODO use local providers for text? I have two custom colors - lighter and darker modifications of primary especially for task action icons
+//TODO use local providers for text? I have two custom colors -
+// lighter and darker modifications of primary especially for task action icons
 @Composable
 internal fun TaskActionButton(
     taskAction: TaskAction,

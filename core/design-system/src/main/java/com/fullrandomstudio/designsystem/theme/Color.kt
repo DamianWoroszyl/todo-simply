@@ -2,7 +2,7 @@ package com.fullrandomstudio.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 
-val DisabledAlpha:Float = 0.38f
+const val DisabledAlpha: Float = 0.38f
 val Transparent = Color(0x00FFFFFF)
 val Debug = Color(0xFF6E9C7B)
 val NotificationLight = Color(0xFF00FFFF)

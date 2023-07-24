@@ -39,7 +39,8 @@ fun HomeScreen(
             HomeBottomBar(
                 currentDestination = currentDestination,
                 onNavigateToDestination = { destination ->
-                    // TODO: feature - when tapping selected destination reset state to top of the list/default tab selection
+                    // TODO feature - when tapping selected destination reset
+                    //  state to top of the list/default tab selection
                     navigateToDestination(navController, destination)
                 }
             )
