@@ -14,9 +14,11 @@ class OfflineTaskCategoryRepository @Inject constructor(
 ) : TaskCategoryRepository {
 
     override suspend fun save(categories: List<TaskCategory>) = withContext(ioDispatcher) {
-        taskCategoryDao.insert(categories.map {
-            it.toEntity()
-        })
+        taskCategoryDao.insert(
+            categories.map {
+                it.toEntity()
+            }
+        )
     }
 
     override suspend fun anyExists(): Boolean = taskCategoryDao.anyExists()

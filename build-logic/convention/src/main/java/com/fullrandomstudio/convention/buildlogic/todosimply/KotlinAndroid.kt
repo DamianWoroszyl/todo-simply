@@ -34,7 +34,6 @@ fun CommonExtension<*, *, *, *>.kotlinOptions(block: KotlinJvmOptions.() -> Unit
     (this as ExtensionAware).extensions.configure("kotlinOptions", block)
 }
 
-
 /**
  * Configure base Kotlin options for JVM (non-Android)
  */

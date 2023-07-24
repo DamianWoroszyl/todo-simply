@@ -27,7 +27,6 @@ import com.fullrandomstudio.todosimply.ui.home.navigation.navigateToHomeSchedule
 fun HomeScreen(
     modifier: Modifier = Modifier,
 ) {
-
     val navController = rememberNavController()
     val currentDestination: NavDestination? = navController
         .currentBackStackEntryAsState().value?.destination
@@ -39,7 +38,8 @@ fun HomeScreen(
             HomeBottomBar(
                 currentDestination = currentDestination,
                 onNavigateToDestination = { destination ->
-                    // TODO: feature - when tapping selected destination reset state to top of the list/default tab selection
+                    // TODO feature - when tapping selected destination reset
+                    //  state to top of the list/default tab selection
                     navigateToDestination(navController, destination)
                 }
             )
@@ -60,7 +60,6 @@ private fun navigateToDestination(
     navController: NavHostController,
     destination: HomeNavBarDestination
 ) {
-
     val navOptions = navOptions {
         popUpTo(navController.graph.findStartDestination().id) {
             saveState = true

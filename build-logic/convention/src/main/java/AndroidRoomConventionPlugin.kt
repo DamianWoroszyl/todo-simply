@@ -1,4 +1,3 @@
-
 import com.fullrandomstudio.convention.buildlogic.todosimply.libs
 import com.google.devtools.ksp.gradle.KspExtension
 import org.gradle.api.Plugin
@@ -21,9 +20,13 @@ class AndroidRoomConventionPlugin : Plugin<Project> {
                 // The schemas directory contains a schema file for each version of the Room database.
                 // This is required to enable Room auto migrations.
                 // See https://developer.android.com/reference/kotlin/androidx/room/AutoMigration.
-                arg(RoomSchemaArgProvider(File(projectDir, "schemas").apply {
-                    mkdirs()
-                }))
+                arg(
+                    RoomSchemaArgProvider(
+                        File(projectDir, "schemas").apply {
+                            mkdirs()
+                        }
+                    )
+                )
             }
 
             dependencies {

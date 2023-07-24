@@ -55,7 +55,6 @@ internal fun TaskListItem(
     onTaskActionClick: (taskId: Long, taskAction: TaskAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     Surface(
         color = MaterialTheme.colorScheme.background,
         modifier = modifier
@@ -69,7 +68,6 @@ internal fun TaskListItem(
                 .fillMaxWidth()
                 .padding(start = 4.dp)
         ) {
-
             val contentAlpha = if (state.task.isFinished) 0.5f else 1f
             val taskStatusImage =
                 if (state.task.isFinished) R.drawable.ic_task_done else R.drawable.ic_task_not_done
@@ -175,12 +173,11 @@ internal fun TaskListItem(
                 }
             }
         }
-
     }
-
 }
 
-//TODO use local providers for text? I have two custom colors - lighter and darker modifications of primary especially for task action icons
+// TODO use local providers for text? I have two custom colors -
+// lighter and darker modifications of primary especially for task action icons
 @Composable
 internal fun TaskActionButton(
     taskAction: TaskAction,
@@ -281,12 +278,10 @@ private fun TaskListItemPreviewTodo() {
     val state = previewTodoTaskUiState()
     TodoSimplyTheme {
         TaskListItem(
-            state = state,
-            onClick = {}, onToggleAlarm = {}, onTaskActionClick = { _, _ -> }
+            state = state, onClick = {}, onToggleAlarm = {}, onTaskActionClick = { _, _ -> }
         )
     }
 }
-
 
 @Preview
 @Composable

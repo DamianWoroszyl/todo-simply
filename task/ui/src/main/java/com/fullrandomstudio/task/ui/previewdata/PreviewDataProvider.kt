@@ -1,5 +1,6 @@
 package com.fullrandomstudio.task.ui.previewdata
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.toArgb
 import com.fullrandomstudio.designsystem.theme.md_theme_light_secondary
 import com.fullrandomstudio.task.model.Task
@@ -8,6 +9,7 @@ import com.fullrandomstudio.task.ui.list.item.TaskListItemUiState
 import com.fullrandomstudio.todosimply.task.data.config.TaskAction
 import java.time.ZonedDateTime
 
+@Composable
 internal fun previewDoneTaskUiState(): TaskListItemUiState = TaskListItemUiState(
     task = Task(
         title = "Some task",
@@ -28,6 +30,7 @@ internal fun previewDoneTaskUiState(): TaskListItemUiState = TaskListItemUiState
     expanded = true
 )
 
+@Composable
 internal fun previewTodoTaskUiState(): TaskListItemUiState = TaskListItemUiState(
     task = Task(
         title = "Some task",

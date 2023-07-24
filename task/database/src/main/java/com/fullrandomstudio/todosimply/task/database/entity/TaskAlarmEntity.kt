@@ -13,7 +13,6 @@ data class TaskAlarmEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0
 )
 
-
 fun TaskAlarmEntity.toDomain(): TaskAlarm = TaskAlarm(
     taskId = taskId,
     alarmDate = alarmDateTime,

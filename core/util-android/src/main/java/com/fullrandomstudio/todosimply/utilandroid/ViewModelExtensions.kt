@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 
+@Suppress("MagicNumber")
 fun <T> Flow<T>.stateInViewModel(viewModel: ViewModel, initValue: T): StateFlow<T> {
     return stateIn(viewModel.viewModelScope, WhileSubscribed(5_000), initValue)
 }
