@@ -8,6 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.fullrandomstudio.designsystem.theme.TodoSimplyTheme
+import com.fullrandomstudio.task.ui.edit.navigateToTaskEdit
+import com.fullrandomstudio.task.ui.edit.taskEdit
 import com.fullrandomstudio.todosimply.ui.home.navigation.HOME_NAV_ROUTE
 import com.fullrandomstudio.todosimply.ui.home.navigation.homeScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,7 +30,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     homeScreen(navController)
+                    taskEdit()
                 }
+
+                navController.navigateToTaskEdit() // todo dw remove before merging
             }
         }
     }

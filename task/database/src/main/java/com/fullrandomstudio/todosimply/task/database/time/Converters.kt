@@ -1,3 +1,5 @@
+@file:Suppress("Filename", "MatchingDeclarationName")
+
 package com.fullrandomstudio.todosimply.task.database.time
 
 import androidx.room.TypeConverter

@@ -1,0 +1,3 @@
+Icon resources:
+https://fonts.google.com/icons?icon.query=calendar&icon.platform=android
+Fill: 1 Weight: 600 Grade: 0 Optical Size: 48

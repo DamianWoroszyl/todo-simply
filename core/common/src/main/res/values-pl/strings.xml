@@ -5,4 +5,11 @@
     <string name="label_shopping_lists">Listy zakupowe</string>
     <string name="label_task_categories">Kategorie</string>
     <string name="label_settings">Ustawienia</string>
+
+    <string name="task_label_name">Nazwa</string>
+    <string name="task_label_description">Opis</string>
+    <string name="task_label_category">Kategoria</string>
+    <string name="task_label_time">Godzina</string>
+    <string name="task_label_date">Data</string>
+    <string name="task_label_alarm">Alarm</string>
 </resources>

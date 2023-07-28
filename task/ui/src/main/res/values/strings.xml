@@ -6,4 +6,7 @@
     <string name="task_action_schedule">Schedule</string>
     <string name="task_action_edit">Edit</string>
 
+    <string name="save_task">Save</string>
+
+    <string name="edit_task_error_empty_name">Task name can\'t be empty</string>
 </resources>

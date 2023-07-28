@@ -8,7 +8,7 @@ const val MIN_SDK = 24
 const val TARGET_SDK = 33
 
 internal fun Project.configureAndroidCommon(
-    extension: CommonExtension<*, *, *, *>,
+    extension: CommonExtension<*, *, *, *, *>,
 ) {
     extension.apply {
         compileSdk = COMPILE_SDK

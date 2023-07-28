@@ -16,6 +16,7 @@ android {
 
 dependencies {
     implementation(project(":core:design-system"))
+    implementation(project(":core:common"))
     implementation(project(":core:util"))
     implementation(project(":core:util-android"))
     implementation(project(":task:data"))
