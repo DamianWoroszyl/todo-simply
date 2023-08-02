@@ -10,8 +10,14 @@ import com.fullrandomstudio.todosimply.task.database.entity.TaskCategoryEntity
 interface TaskCategoryDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(map: List<TaskCategoryEntity>)
+    suspend fun insert(items: List<TaskCategoryEntity>)
 
     @Query("SELECT COUNT() FROM task_category LIMIT 1")
     suspend fun anyExists(): Boolean
+
+    @Query("SELECT * FROM task_category WHERE is_default = 1")
+    suspend fun getDefault(): TaskCategoryEntity?
+
+    @Query("""SELECT * FROM task_category""")
+    suspend fun getAll(): List<TaskCategoryEntity>
 }

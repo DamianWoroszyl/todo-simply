@@ -14,7 +14,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":task:model"))
     implementation(libs.androidx.core.ktx)
 
     testImplementation(libs.junit4)

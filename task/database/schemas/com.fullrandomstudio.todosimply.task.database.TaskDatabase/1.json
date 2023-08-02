@@ -2,15 +2,15 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "86d6deaada5fcdf82bb56eec9f216d9b",
+    "identityHash": "48d607e6f0c41c0fd4f508af81bbeaa2",
     "entities": [
       {
         "tableName": "task",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`title` TEXT NOT NULL, `description` TEXT NOT NULL, `scheduled` INTEGER NOT NULL, `soft_deleted` INTEGER NOT NULL, `creation_date` TEXT NOT NULL, `schedule_date` TEXT NOT NULL, `finish_date` TEXT NOT NULL, `category_id` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `description` TEXT NOT NULL, `scheduled` INTEGER NOT NULL, `soft_deleted` INTEGER NOT NULL, `creation_date` TEXT NOT NULL, `schedule_date` TEXT NOT NULL, `finish_date` TEXT NOT NULL, `category_id` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
           {
-            "fieldPath": "title",
-            "columnName": "title",
+            "fieldPath": "name",
+            "columnName": "name",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -74,7 +74,7 @@
       },
       {
         "tableName": "task_alarm",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`task_id` INTEGER NOT NULL, `alarm_date_time` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`task_id` INTEGER NOT NULL, `date_time` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
           {
             "fieldPath": "taskId",
@@ -83,8 +83,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "alarmDateTime",
-            "columnName": "alarm_date_time",
+            "fieldPath": "dateTime",
+            "columnName": "date_time",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -106,7 +106,7 @@
       },
       {
         "tableName": "task_category",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `color` INTEGER NOT NULL, `isDefault` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `color` INTEGER NOT NULL, `is_default` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
           {
             "fieldPath": "name",
@@ -122,7 +122,7 @@
           },
           {
             "fieldPath": "isDefault",
-            "columnName": "isDefault",
+            "columnName": "is_default",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -145,13 +145,13 @@
     ],
     "views": [
       {
-        "viewName": "TaskFullView",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT \n            task.* ,\n            task_category.name AS task_category_name,\n            task_category.id AS task_category_id,\n            task_category.color AS task_category_color\n        FROM task\n        INNER JOIN task_category ON task.category_id = task_category.id \n        LEFT OUTER JOIN task_alarm AS ta ON task.id = ta.task_id"
+        "viewName": "task_full_view",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT \n            task.* ,\n            task_category.name AS task_category_name,\n            task_category.id AS task_category_id,\n            task_category.color AS task_category_color,\n            task_category.is_default AS task_category_is_default,\n            task_alarm.task_id AS alarm_task_id,\n            task_alarm.date_time AS alarm_date_time,\n            task_alarm.id AS alarm_id\n        FROM task\n        INNER JOIN task_category ON task.category_id = task_category.id \n        LEFT OUTER JOIN task_alarm ON task.id = task_alarm.task_id"
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '86d6deaada5fcdf82bb56eec9f216d9b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '48d607e6f0c41c0fd4f508af81bbeaa2')"
     ]
   }
 }

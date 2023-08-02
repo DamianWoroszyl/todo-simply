@@ -7,13 +7,13 @@ import java.time.ZonedDateTime
 
 @Entity(tableName = "task")
 data class TaskEntity(
-    val title: String,
-    val description: String,
-    val scheduled: Boolean,
+    @ColumnInfo(name = "name") val name: String,
+    @ColumnInfo(name = "description") val description: String,
+    @ColumnInfo(name = "scheduled") val scheduled: Boolean,
     @ColumnInfo(name = "soft_deleted") val softDeleted: Boolean,
     @ColumnInfo(name = "creation_date") val creationDate: ZonedDateTime,
     @ColumnInfo(name = "schedule_date") val scheduleDate: ZonedDateTime,
     @ColumnInfo(name = "finish_date") val finishDate: ZonedDateTime,
     @ColumnInfo(name = "category_id") val categoryId: Long,
-    @PrimaryKey(autoGenerate = true) val id: Long = 0
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val id: Long = 0
 )

@@ -12,7 +12,7 @@ import java.time.ZonedDateTime
 @Composable
 internal fun previewDoneTaskUiState(): TaskListItemUiState = TaskListItemUiState(
     task = Task(
-        title = "Some task",
+        name = "Some task",
         description = "Some task description",
         creationDate = ZonedDateTime.now().minusDays(5),
         scheduleDate = ZonedDateTime.now().plusDays(5),
@@ -21,8 +21,10 @@ internal fun previewDoneTaskUiState(): TaskListItemUiState = TaskListItemUiState
         category = TaskCategory(
             name = "Home",
             color = md_theme_light_secondary.toArgb(),
+            isDefault = false,
+            id = 0,
         ),
-        taskAlarm = com.fullrandomstudio.task.model.TaskAlarm(1L, ZonedDateTime.now().plusDays(5)),
+        taskAlarm = com.fullrandomstudio.task.model.TaskAlarm(0L, 1L, ZonedDateTime.now().plusDays(5)),
         softDeleted = false,
         id = 1L,
     ),
@@ -33,7 +35,7 @@ internal fun previewDoneTaskUiState(): TaskListItemUiState = TaskListItemUiState
 @Composable
 internal fun previewTodoTaskUiState(): TaskListItemUiState = TaskListItemUiState(
     task = Task(
-        title = "Some task",
+        name = "Some task",
         description = "Some task description",
         creationDate = ZonedDateTime.now().minusDays(5),
         scheduleDate = ZonedDateTime.now().plusDays(5),
@@ -42,6 +44,8 @@ internal fun previewTodoTaskUiState(): TaskListItemUiState = TaskListItemUiState
         category = TaskCategory(
             name = "Home",
             color = md_theme_light_secondary.toArgb(),
+            isDefault = false,
+            id = 0,
         ),
         taskAlarm = null,
         softDeleted = false,

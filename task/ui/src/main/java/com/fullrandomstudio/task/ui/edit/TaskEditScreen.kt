@@ -18,6 +18,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -29,6 +30,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fullrandomstudio.designsystem.theme.TodoSimplyTheme
 import com.fullrandomstudio.designsystem.theme.component.TdsAppBarIconButton
 import com.fullrandomstudio.designsystem.theme.component.TdsClearTopAppBar
@@ -38,14 +40,11 @@ import com.fullrandomstudio.designsystem.theme.component.TdsTextField
 import com.fullrandomstudio.designsystem.theme.token.ScreenTokens
 import com.fullrandomstudio.designsystem.theme.token.SeparatorTokens
 import com.fullrandomstudio.designsystem.theme.token.TextFieldTokens
+import com.fullrandomstudio.task.model.Task
 import com.fullrandomstudio.task.model.TaskCategory
-import com.fullrandomstudio.task.ui.edit.EditAttribute.EditAttributeAlarm
-import com.fullrandomstudio.task.ui.edit.EditAttribute.EditAttributeCategory
-import com.fullrandomstudio.task.ui.edit.EditAttribute.EditAttributeDate
-import com.fullrandomstudio.task.ui.edit.EditAttribute.EditAttributeTime
 import com.fullrandomstudio.todosimply.task.ui.R
-import java.time.LocalDate
-import java.time.LocalTime
+import com.fullrandomstudio.todosimply.util.formatDateLocalized
+import com.fullrandomstudio.todosimply.util.formatTimeLocalized
 import com.fullrandomstudio.todosimply.common.R as CommonR
 
 @Composable
@@ -53,31 +52,45 @@ fun TaskEditScreen(
     modifier: Modifier = Modifier,
     viewModel: TaskEditViewModel = hiltViewModel()
 ) {
+    val task by viewModel.task.collectAsStateWithLifecycle()
+    val taskCategories by viewModel.taskCategories.collectAsStateWithLifecycle()
+    val categoryDialogVisible by viewModel.categoryDialogVisible.collectAsStateWithLifecycle()
+
     TaskEditScreen(
-        onSaveClick = {},
-        onBackClick = {},
-        onDoneClick = {},
+        task = task,
         name = viewModel.taskName.value,
         description = viewModel.taskDescription.value,
-        onNameChange = {
-            viewModel.onNameChange(it)
-        },
-        onDescriptionChange = {
-            viewModel.onDescriptionChange(it)
-        },
+        onSaveClick = { viewModel.onSaveClick() },
+        onBackClick = { TODO() },
+        onDoneClick = { viewModel.onDoneClick() },
+        onNameChange = { viewModel.onNameChange(it) },
+        onDescriptionChange = { viewModel.onDescriptionChange(it) },
+        onAlarmChange = { viewModel.onAlarmChange() },
+        onCategoryClick = { viewModel.onCategoryClick() },
+        categoryDialogVisible = categoryDialogVisible,
+        taskCategories = taskCategories,
+        onCategorySelected = { viewModel.onCategorySelected(it) },
+        onCategorySelectDismissRequest = { viewModel.onCategorySelectDismissRequest() },
         modifier = modifier,
     )
 }
 
 @Composable
 fun TaskEditScreen(
+    task: Task,
+    name: String,
+    description: String,
     onSaveClick: () -> Unit,
     onBackClick: () -> Unit,
     onDoneClick: () -> Unit,
-    name: String,
-    description: String,
     onNameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
+    onAlarmChange: () -> Unit,
+    onCategoryClick: () -> Unit,
+    categoryDialogVisible: Boolean,
+    taskCategories: List<TaskCategory>,
+    onCategorySelected: (TaskCategory) -> Unit,
+    onCategorySelectDismissRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
@@ -99,6 +112,14 @@ fun TaskEditScreen(
         },
         modifier = modifier.fillMaxSize()
     ) { paddingValues ->
+        if (categoryDialogVisible) {
+            TaskCategorySelectBottomSheet(
+                categories = taskCategories,
+                onCategoryClick = onCategorySelected,
+                onDismissRequest = onCategorySelectDismissRequest
+            )
+        }
+
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -106,10 +127,13 @@ fun TaskEditScreen(
                 .fillMaxSize()
         ) {
             InputsContainer(
+                task = task,
                 name = name,
                 description = description,
                 onNameChange = onNameChange,
                 onDescriptionChange = onDescriptionChange,
+                onAlarmChange = onAlarmChange,
+                onCategoryClick = onCategoryClick,
                 modifier = Modifier
                     .verticalScroll(scrollState)
                     .padding(ScreenTokens.ScreenPadding)
@@ -146,8 +170,11 @@ private fun ActionsContainer(
 private fun InputsContainer(
     name: String,
     description: String,
+    task: Task,
     onNameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
+    onAlarmChange: () -> Unit,
+    onCategoryClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -183,43 +210,51 @@ private fun InputsContainer(
         Spacer(modifier = Modifier.height(16.dp))
         TdsSeparatorHorizontal(thickness = SeparatorTokens.ThicknessBold)
 
-        // todo dw this will come from viewmodel
-        val taskAttributes: List<EditAttributeWithListener> = listOf(
-            EditAttributeWithListener(
-                editAttribute = EditAttributeCategory(
-                    label = stringResource(id = CommonR.string.task_label_category),
-                    taskCategory = TaskCategory("Home", Color.Green.toArgb(), false)
-                ),
-                onClick = {}
-            ),
-            EditAttributeWithListener(
-                editAttribute = EditAttributeDate(
-                    label = stringResource(id = CommonR.string.task_label_date),
-                    date = LocalDate.now()
-                ),
-                onClick = {}
-            ),
-            EditAttributeWithListener(
-                editAttribute = EditAttributeTime(
-                    label = stringResource(id = CommonR.string.task_label_time),
-                    time = LocalTime.now()
-                ),
-                onClick = {}
-            ),
-            EditAttributeWithListener(
-                editAttribute = EditAttributeAlarm(
-                    label = stringResource(id = CommonR.string.task_label_alarm),
-                    alarmSet = true
-                ),
-                onClick = {}
-            )
+        EditAttributeWithText(
+            label = stringResource(id = CommonR.string.task_label_category),
+            body = task.category.name,
+            iconRes = CommonR.drawable.ic_category,
+            iconTint = Color(task.category.color),
+            onClick = onCategoryClick,
         )
 
-        EditAttributesList(
-            editAttributeWithListeners = taskAttributes,
-            modifier = Modifier
-                .fillMaxWidth()
-        )
+        if (task.scheduled) {
+            TdsSeparatorHorizontal(
+                thickness = SeparatorTokens.ThicknessThin,
+                modifier = Modifier.padding(start = EditAttributeTokens.separatorPadding)
+            )
+
+            EditAttributeWithText(
+                label = stringResource(id = CommonR.string.task_label_date),
+                body = formatDateLocalized(requireNotNull(task.scheduleDate)),
+                iconRes = CommonR.drawable.ic_calendar,
+                onClick = { TODO("Show date dialog") },
+            )
+
+            TdsSeparatorHorizontal(
+                thickness = SeparatorTokens.ThicknessThin,
+                modifier = Modifier.padding(start = EditAttributeTokens.separatorPadding)
+            )
+
+            EditAttributeWithText(
+                label = stringResource(id = CommonR.string.task_label_time),
+                body = formatTimeLocalized(requireNotNull(task.scheduleDate)),
+                iconRes = CommonR.drawable.ic_schedule,
+                onClick = { TODO("Show time dialog") },
+            )
+
+            TdsSeparatorHorizontal(
+                thickness = SeparatorTokens.ThicknessThin,
+                modifier = Modifier.padding(start = EditAttributeTokens.separatorPadding)
+            )
+
+            EditAttributeWithSwitch(
+                label = stringResource(id = CommonR.string.task_label_alarm),
+                body = task.hasAlarm,
+                iconRes = CommonR.drawable.ic_alarm,
+                onClick = onAlarmChange,
+            )
+        }
     }
 }
 
@@ -228,13 +263,27 @@ private fun InputsContainer(
 private fun TaskEditScreenPreview() {
     TodoSimplyTheme {
         TaskEditScreen(
+            task = Task.empty(true).copy(
+                category = TaskCategory(
+                    name = "Default",
+                    color = Color.Magenta.toArgb(),
+                    isDefault = false,
+                    id = 0,
+                )
+            ),
+            name = "",
+            description = "",
+            categoryDialogVisible = false,
+            taskCategories = emptyList(),
             onSaveClick = {},
             onBackClick = {},
             onDoneClick = {},
-            name = "",
-            description = "",
             onNameChange = {},
             onDescriptionChange = {},
+            onAlarmChange = {},
+            onCategorySelected = {},
+            onCategorySelectDismissRequest = {},
+            onCategoryClick = {}
         )
     }
 }

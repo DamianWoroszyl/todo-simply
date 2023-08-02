@@ -20,6 +20,7 @@ dependencies {
     implementation(project(":core:util"))
     implementation(project(":core:util-android"))
     implementation(project(":task:data"))
+    implementation(project(":task:domain"))
     implementation(project(":task:model"))
 
     implementation(libs.androidx.core.ktx)

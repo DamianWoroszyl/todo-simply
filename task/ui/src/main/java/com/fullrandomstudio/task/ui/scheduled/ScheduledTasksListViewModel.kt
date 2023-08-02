@@ -24,6 +24,7 @@ class ScheduledTasksListViewModel @AssistedInject constructor(
 ) : ViewModel() {
 
     private val _expandedTask: MutableStateFlow<Long> = MutableStateFlow(-1L)
+    //todo dw move to use case?
     val items: StateFlow<List<TasksListItem>> =
         taskRepository.getScheduledTasks(dateRange)
             .combine(_expandedTask, ::Pair)
