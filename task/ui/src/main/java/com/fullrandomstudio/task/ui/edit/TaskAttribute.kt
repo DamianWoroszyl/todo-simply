@@ -1,6 +1,14 @@
+@file:OptIn(ExperimentalAnimationApi::class)
+
 package com.fullrandomstudio.task.ui.edit
 
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -15,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -32,7 +41,7 @@ private fun EditAttributeLabel(
 ) {
     Text(
         text = label,
-        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
     )
 }
 
@@ -51,10 +60,17 @@ fun EditAttributeWithText(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 EditAttributeLabel(label = label)
-                Text(
-                    text = body,
-                    style = MaterialTheme.typography.labelLarge
-                )
+                AnimatedContent(
+                    targetState = body,
+                    transitionSpec = {
+                        fadeIn() with fadeOut()
+                    }
+                ) {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                }
             }
         },
         iconRes = iconRes,
@@ -109,10 +125,11 @@ private fun EditAttributeContainer(
             .clickable { onClick() }
             .padding(vertical = 12.dp, horizontal = 8.dp)
     ) {
+        val tint by animateColorAsState(targetValue = iconTint, label = "attribute_icon_tint")
         Icon(
             imageVector = ImageVector.vectorResource(id = iconRes),
             contentDescription = null,
-            tint = iconTint,
+            tint = tint,
             modifier = Modifier
                 .padding(top = 2.dp)
                 .size(16.dp)

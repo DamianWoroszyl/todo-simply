@@ -13,23 +13,29 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.fullrandomstudio.designsystem.theme.TodoSimplyTheme
+import com.fullrandomstudio.designsystem.theme.component.TdsSeparatorHorizontal
+import com.fullrandomstudio.designsystem.theme.util.pxToDp
 import com.fullrandomstudio.task.model.TaskCategory
 import kotlinx.coroutines.launch
 
@@ -39,24 +45,29 @@ fun TaskCategorySelectBottomSheet(
     onCategoryClick: (TaskCategory) -> Unit,
     onDismissRequest: () -> Unit
 ) {
-    val bottomSheetState = rememberSheetState(skipHalfExpanded = true)
+    val bottomSheetState = rememberSheetState()
     val coroutineScope = rememberCoroutineScope()
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = bottomSheetState,
     ) {
-        TaskCategorySelectDialogContent(
-            categories = categories,
-            onCategoryClick = {
-                onCategoryClick(it)
-                coroutineScope.launch { bottomSheetState.hide() }.invokeOnCompletion {
-                    if (!bottomSheetState.isVisible) {
-                        onDismissRequest()
+        Surface(
+            color = MaterialTheme.colorScheme.background,
+            modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
+        ) {
+            TaskCategorySelectDialogContent(
+                categories = categories,
+                onCategoryClick = {
+                    onCategoryClick(it)
+                    coroutineScope.launch { bottomSheetState.hide() }.invokeOnCompletion {
+                        if (!bottomSheetState.isVisible) {
+                            onDismissRequest()
+                        }
                     }
-                }
-            },
-        )
+                },
+            )
+        }
     }
 }
 
@@ -66,13 +77,28 @@ fun TaskCategorySelectDialogContent(
     onCategoryClick: (TaskCategory) -> Unit,
 ) {
     LazyColumn(
-        Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp)
     ) {
-        items(categories, key = { it.id }) {
+        itemsIndexed(
+            items = categories,
+            key = { _, category -> category.id }
+        ) { index, category ->
             TaskCategoryItem(
-                category = it,
+                category = category,
                 onCategoryClick = onCategoryClick
             )
+
+            if (categories.lastIndex != index) {
+                TdsSeparatorHorizontal(
+                    thickness = 1.pxToDp(),
+                    modifier = Modifier.padding(
+                        start = 40.dp,
+                        end = 24.dp
+                    )
+                )
+            }
         }
     }
 }
@@ -86,6 +112,8 @@ internal fun TaskCategoryItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onCategoryClick(category) }
+            .padding(horizontal = 8.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(id = com.fullrandomstudio.todosimply.common.R.drawable.ic_category),
@@ -93,12 +121,12 @@ internal fun TaskCategoryItem(
             tint = Color(category.color),
             modifier = Modifier
                 .padding(top = 2.dp)
-                .size(16.dp)
+                .size(20.dp)
         )
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        Text(text = category.name, style = MaterialTheme.typography.bodySmall)
+        Text(text = category.name, style = MaterialTheme.typography.labelLarge)
     }
 }
 

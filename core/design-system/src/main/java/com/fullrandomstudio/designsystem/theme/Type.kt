@@ -77,12 +77,12 @@ internal val TodoSimplyTypography = Typography(
     ),
     labelLarge = TextStyle(
         fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
+        fontSize = 16.sp,
         fontFamily = Barlow,
     ),
     labelMedium = TextStyle(
         fontWeight = FontWeight.Medium,
-        fontSize = 12.sp,
+        fontSize = 14.sp,
         fontFamily = Barlow,
     ),
     labelSmall = TextStyle(
