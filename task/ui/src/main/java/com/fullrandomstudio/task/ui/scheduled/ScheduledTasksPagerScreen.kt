@@ -89,12 +89,13 @@ fun ScheduledTasksPagerScreen(
                 .padding(paddingValues)
         ) {
 
-            val pagerState = rememberPagerState(initialPage = initialPage)
+            val pagerState = rememberPagerState(initialPage = initialPage) {
+                pageCount
+            }
 
             HorizontalPager(
                 state = pagerState,
                 beyondBoundsPageCount = 2,
-                pageCount = pageCount,
                 modifier = Modifier.fillMaxSize()
             ) { page ->
                 pageScreenProvider(page)

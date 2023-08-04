@@ -34,9 +34,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fullrandomstudio.designsystem.theme.TodoSimplyTheme
 import com.fullrandomstudio.designsystem.theme.component.TdsAppBarIconButton
 import com.fullrandomstudio.designsystem.theme.component.TdsClearTopAppBar
+import com.fullrandomstudio.designsystem.theme.component.TdsDatePicker
 import com.fullrandomstudio.designsystem.theme.component.TdsExtendedFloatingActionButton
 import com.fullrandomstudio.designsystem.theme.component.TdsSeparatorHorizontal
 import com.fullrandomstudio.designsystem.theme.component.TdsTextField
+import com.fullrandomstudio.designsystem.theme.component.TdsTimePicker
 import com.fullrandomstudio.designsystem.theme.token.ScreenTokens
 import com.fullrandomstudio.designsystem.theme.token.SeparatorTokens
 import com.fullrandomstudio.designsystem.theme.token.TextFieldTokens
@@ -45,6 +47,7 @@ import com.fullrandomstudio.task.model.TaskCategory
 import com.fullrandomstudio.todosimply.task.ui.R
 import com.fullrandomstudio.todosimply.util.formatDateLocalized
 import com.fullrandomstudio.todosimply.util.formatTimeLocalized
+import java.time.LocalTime
 import com.fullrandomstudio.todosimply.common.R as CommonR
 
 @Composable
@@ -54,12 +57,22 @@ fun TaskEditScreen(
 ) {
     val task by viewModel.task.collectAsStateWithLifecycle()
     val taskCategories by viewModel.taskCategories.collectAsStateWithLifecycle()
-    val categoryDialogVisible by viewModel.categoryDialogVisible.collectAsStateWithLifecycle()
+    val categoryPickerVisible by viewModel.categoryPickerVisible.collectAsStateWithLifecycle()
+    val datePickerVisible by viewModel.datePickerVisible.collectAsStateWithLifecycle()
+    val timePickerVisible by viewModel.timePickerVisible.collectAsStateWithLifecycle()
 
-    TaskEditScreen(
+    val state = TaskEditScreenState(
         task = task,
         name = viewModel.taskName.value,
         description = viewModel.taskDescription.value,
+        taskCategories = taskCategories,
+        categoryDialogVisible = categoryPickerVisible,
+        datePickerVisible = datePickerVisible,
+        timePickerVisible = timePickerVisible,
+    )
+
+    TaskEditScreen(
+        state = state,
         onSaveClick = { viewModel.onSaveClick() },
         onBackClick = { TODO() },
         onDoneClick = { viewModel.onDoneClick() },
@@ -67,19 +80,31 @@ fun TaskEditScreen(
         onDescriptionChange = { viewModel.onDescriptionChange(it) },
         onAlarmChange = { viewModel.onAlarmChange() },
         onCategoryClick = { viewModel.onCategoryClick() },
-        categoryDialogVisible = categoryDialogVisible,
-        taskCategories = taskCategories,
         onCategorySelected = { viewModel.onCategorySelected(it) },
         onCategorySelectDismissRequest = { viewModel.onCategorySelectDismissRequest() },
+        onDateClick = { viewModel.onScheduleDateClick() },
+        onDatePickerDismiss = { viewModel.onDismissDatePicker() },
+        onDateSelected = { viewModel.onDateSelected(it) },
+        onTimeClick = { viewModel.onScheduleTimeClick() },
+        onTimePickerDismiss = { viewModel.onTimePickerDismiss() },
+        onTimeSelected = { viewModel.onTimeSelected(it) },
         modifier = modifier,
     )
 }
 
+data class TaskEditScreenState(
+    val task: Task,
+    val name: String,
+    val description: String,
+    val taskCategories: List<TaskCategory>,
+    val categoryDialogVisible: Boolean,
+    val datePickerVisible: Boolean,
+    val timePickerVisible: Boolean
+)
+
 @Composable
 fun TaskEditScreen(
-    task: Task,
-    name: String,
-    description: String,
+    state: TaskEditScreenState,
     onSaveClick: () -> Unit,
     onBackClick: () -> Unit,
     onDoneClick: () -> Unit,
@@ -87,14 +112,17 @@ fun TaskEditScreen(
     onDescriptionChange: (String) -> Unit,
     onAlarmChange: () -> Unit,
     onCategoryClick: () -> Unit,
-    categoryDialogVisible: Boolean,
-    taskCategories: List<TaskCategory>,
     onCategorySelected: (TaskCategory) -> Unit,
     onCategorySelectDismissRequest: () -> Unit,
+    onDateClick: () -> Unit,
+    onDatePickerDismiss: () -> Unit,
+    onDateSelected: (timestamp: Long) -> Unit,
+    onTimeClick: () -> Unit,
+    onTimePickerDismiss: () -> Unit,
+    onTimeSelected: (time: LocalTime) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
-
     Scaffold(
         floatingActionButton = {
             TdsExtendedFloatingActionButton(
@@ -112,13 +140,7 @@ fun TaskEditScreen(
         },
         modifier = modifier.fillMaxSize()
     ) { paddingValues ->
-        if (categoryDialogVisible) {
-            TaskCategorySelectBottomSheet(
-                categories = taskCategories,
-                onCategoryClick = onCategorySelected,
-                onDismissRequest = onCategorySelectDismissRequest
-            )
-        }
+
 
         Column(
             modifier = Modifier
@@ -127,19 +149,46 @@ fun TaskEditScreen(
                 .fillMaxSize()
         ) {
             InputsContainer(
-                task = task,
-                name = name,
-                description = description,
+                task = state.task,
+                name = state.name,
+                description = state.description,
                 onNameChange = onNameChange,
                 onDescriptionChange = onDescriptionChange,
                 onAlarmChange = onAlarmChange,
                 onCategoryClick = onCategoryClick,
+                onScheduleDateClick = onDateClick,
+                onScheduleTimeClick = onTimeClick,
                 modifier = Modifier
                     .verticalScroll(scrollState)
                     .padding(ScreenTokens.ScreenPadding)
                     .padding(bottom = 64.dp)
             )
         }
+    }
+
+    if (state.categoryDialogVisible) {
+        TaskCategorySelectBottomSheet(
+            categories = state.taskCategories,
+            onCategoryClick = onCategorySelected,
+            onDismissRequest = onCategorySelectDismissRequest
+        )
+    }
+
+    if (state.datePickerVisible) {
+        TdsDatePicker(
+            initialDateTimestamp = requireNotNull(state.task.scheduleDateTime)
+                .toInstant().toEpochMilli(),
+            onDismiss = onDatePickerDismiss,
+            onDateSelected = onDateSelected,
+        )
+    }
+
+    if (state.timePickerVisible) {
+        TdsTimePicker(
+            initialTime = requireNotNull(state.task.scheduleDateTime).toLocalTime(),
+            onDismiss = onTimePickerDismiss,
+            onTimeSelected = onTimeSelected,
+        )
     }
 }
 
@@ -175,6 +224,8 @@ private fun InputsContainer(
     onDescriptionChange: (String) -> Unit,
     onAlarmChange: () -> Unit,
     onCategoryClick: () -> Unit,
+    onScheduleDateClick: () -> Unit,
+    onScheduleTimeClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -226,9 +277,9 @@ private fun InputsContainer(
 
             EditAttributeWithText(
                 label = stringResource(id = CommonR.string.task_label_date),
-                body = formatDateLocalized(requireNotNull(task.scheduleDate)),
+                body = formatDateLocalized(requireNotNull(task.scheduleDateTime)),
                 iconRes = CommonR.drawable.ic_calendar,
-                onClick = { TODO("Show date dialog") },
+                onClick = onScheduleDateClick,
             )
 
             TdsSeparatorHorizontal(
@@ -238,9 +289,9 @@ private fun InputsContainer(
 
             EditAttributeWithText(
                 label = stringResource(id = CommonR.string.task_label_time),
-                body = formatTimeLocalized(requireNotNull(task.scheduleDate)),
+                body = formatTimeLocalized(requireNotNull(task.scheduleDateTime)),
                 iconRes = CommonR.drawable.ic_schedule,
-                onClick = { TODO("Show time dialog") },
+                onClick = onScheduleTimeClick,
             )
 
             TdsSeparatorHorizontal(
@@ -261,29 +312,40 @@ private fun InputsContainer(
 @Preview
 @Composable
 private fun TaskEditScreenPreview() {
+    val state = TaskEditScreenState(
+        task = Task.empty(true).copy(
+            category = TaskCategory(
+                name = "Default",
+                color = Color.Magenta.toArgb(),
+                isDefault = false,
+                id = 0,
+            )
+        ),
+        name = "",
+        description = "",
+        taskCategories = emptyList(),
+        categoryDialogVisible = false,
+        datePickerVisible = false,
+        timePickerVisible = false,
+    )
     TodoSimplyTheme {
         TaskEditScreen(
-            task = Task.empty(true).copy(
-                category = TaskCategory(
-                    name = "Default",
-                    color = Color.Magenta.toArgb(),
-                    isDefault = false,
-                    id = 0,
-                )
-            ),
-            name = "",
-            description = "",
-            categoryDialogVisible = false,
-            taskCategories = emptyList(),
+            state = state,
             onSaveClick = {},
             onBackClick = {},
             onDoneClick = {},
             onNameChange = {},
             onDescriptionChange = {},
             onAlarmChange = {},
+            onCategoryClick = {},
             onCategorySelected = {},
             onCategorySelectDismissRequest = {},
-            onCategoryClick = {}
+            onDateClick = {},
+            onDatePickerDismiss = {},
+            onDateSelected = {},
+            onTimeClick = {},
+            onTimePickerDismiss = {},
+            onTimeSelected = {}
         )
     }
 }

@@ -39,7 +39,7 @@ class OfflineTaskRepository @Inject constructor(
                 name = "Some task ${dateRange.start} $it",
                 description = "Some task description $scheduleTime",
                 creationDate = ZonedDateTime.now().minusDays(5),
-                scheduleDate = scheduleTime,
+                scheduleDateTime = scheduleTime,
                 finishDate = ZonedDateTime.now(),
                 scheduled = true,
                 category = category,

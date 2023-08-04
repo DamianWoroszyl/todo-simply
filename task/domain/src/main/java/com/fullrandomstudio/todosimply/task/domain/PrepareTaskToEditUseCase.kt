@@ -51,7 +51,7 @@ class PrepareTaskToEditUseCase @Inject constructor(
             category = taskCategoryRepository.getDefaultCategory(),
             scheduled = scheduled,
             creationDate = ZonedDateTime.now(),
-            scheduleDate = scheduleTime,
+            scheduleDateTime = scheduleTime,
             finishDate = null,
             softDeleted = false,
             id = 0,
@@ -62,7 +62,7 @@ class PrepareTaskToEditUseCase @Inject constructor(
     private fun prepareTaskToMoveToScheduled(originalTask: Task): Task {
         val scheduleTime: ZonedDateTime = createTaskDateTime()
         return originalTask.copy(
-            scheduleDate = scheduleTime,
+            scheduleDateTime = scheduleTime,
             scheduled = true,
             taskAlarm = TaskAlarm(0L, originalTask.id, scheduleTime)
         )

@@ -15,6 +15,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,10 +37,14 @@ class TaskEditViewModel @Inject constructor(
     private val _task: MutableStateFlow<Task> = MutableStateFlow(Task.empty(args.scheduled))
     private val _categoryDialogVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val _categories: MutableStateFlow<List<TaskCategory>> = MutableStateFlow(emptyList())
+    private val _datePickerDialogVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val _timePickerDialogVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     val task: StateFlow<Task> = _task
-    val categoryDialogVisible: StateFlow<Boolean> = _categoryDialogVisible
+    val categoryPickerVisible: StateFlow<Boolean> = _categoryDialogVisible
     val taskCategories: StateFlow<List<TaskCategory>> = _categories
+    val datePickerVisible: StateFlow<Boolean> = _datePickerDialogVisible
+    val timePickerVisible: StateFlow<Boolean> = _timePickerDialogVisible
 
     init {
         viewModelScope.launch {
@@ -82,7 +91,7 @@ class TaskEditViewModel @Inject constructor(
             val newAlarm: TaskAlarm? = if (it.hasAlarm) {
                 null
             } else {
-                TaskAlarm(0, it.id, requireNotNull(it.scheduleDate))
+                TaskAlarm(0, it.id, requireNotNull(it.scheduleDateTime))
             }
 
             it.copy(taskAlarm = newAlarm)
@@ -99,5 +108,47 @@ class TaskEditViewModel @Inject constructor(
 
     fun onCategoryClick() {
         _categoryDialogVisible.value = true
+    }
+
+    fun onScheduleDateClick() {
+        _datePickerDialogVisible.value = true
+    }
+
+    fun onDismissDatePicker() {
+        _datePickerDialogVisible.value = false
+    }
+
+    fun onDateSelected(timestamp: Long) {
+        _datePickerDialogVisible.value = false
+        _task.update {
+            val time = requireNotNull(it.scheduleDateTime?.toLocalTime())
+            it.copy(
+                scheduleDateTime = ZonedDateTime.ofInstant(
+                    Instant.ofEpochMilli(timestamp), ZoneId.systemDefault()
+                )
+                    .withHour(time.hour)
+                    .withMinute(time.minute)
+            )
+        }
+    }
+
+    fun onScheduleTimeClick() {
+        _timePickerDialogVisible.value = true
+    }
+
+    fun onTimePickerDismiss() {
+        _timePickerDialogVisible.value = false
+    }
+
+    fun onTimeSelected(time: LocalTime) {
+        _timePickerDialogVisible.value = false
+        _task.update {
+            it.copy(
+                scheduleDateTime = requireNotNull(it.scheduleDateTime)
+                    .truncatedTo(ChronoUnit.DAYS)
+                    .withHour(time.hour)
+                    .withMinute(time.minute)
+            )
+        }
     }
 }

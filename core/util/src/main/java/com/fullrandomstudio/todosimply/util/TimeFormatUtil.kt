@@ -27,7 +27,12 @@ fun formatDayNameAndDateLocalized(zonedDateTime: ZonedDateTime): String =
                 .format(zonedDateTime)
 
 fun formatDateLocalized(zonedDateTime: ZonedDateTime): String =
-    DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+    DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
+        .withLocale(Locale.getDefault())
+        .format(zonedDateTime)
+
+fun formatDateWithDay(zonedDateTime: ZonedDateTime): String =
+    DateTimeFormatter.ofPattern("EEE dd.MM.yyyy")
         .withLocale(Locale.getDefault())
         .format(zonedDateTime)
 

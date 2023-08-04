@@ -20,7 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSheetState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -45,7 +45,7 @@ fun TaskCategorySelectBottomSheet(
     onCategoryClick: (TaskCategory) -> Unit,
     onDismissRequest: () -> Unit
 ) {
-    val bottomSheetState = rememberSheetState()
+    val bottomSheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
 
     ModalBottomSheet(
