@@ -61,65 +61,61 @@ fun TaskEditScreen(
     val datePickerVisible by viewModel.datePickerVisible.collectAsStateWithLifecycle()
     val timePickerVisible by viewModel.timePickerVisible.collectAsStateWithLifecycle()
 
-    val state = TaskEditScreenState(
-        task = task,
-        name = viewModel.taskName.value,
-        description = viewModel.taskDescription.value,
-        taskCategories = taskCategories,
-        categoryDialogVisible = categoryPickerVisible,
-        datePickerVisible = datePickerVisible,
-        timePickerVisible = timePickerVisible,
-    )
-
     TaskEditScreen(
-        state = state,
         onSaveClick = { viewModel.onSaveClick() },
         onBackClick = { TODO() },
         onDoneClick = { viewModel.onDoneClick() },
-        onNameChange = { viewModel.onNameChange(it) },
-        onDescriptionChange = { viewModel.onDescriptionChange(it) },
-        onAlarmChange = { viewModel.onAlarmChange() },
-        onCategoryClick = { viewModel.onCategoryClick() },
-        onCategorySelected = { viewModel.onCategorySelected(it) },
-        onCategorySelectDismissRequest = { viewModel.onCategorySelectDismissRequest() },
-        onDateClick = { viewModel.onScheduleDateClick() },
-        onDatePickerDismiss = { viewModel.onDismissDatePicker() },
-        onDateSelected = { viewModel.onDateSelected(it) },
-        onTimeClick = { viewModel.onScheduleTimeClick() },
-        onTimePickerDismiss = { viewModel.onTimePickerDismiss() },
-        onTimeSelected = { viewModel.onTimeSelected(it) },
+        inputs = {
+            InputsContainer(
+                task = task,
+                name = viewModel.taskName.value,
+                description = viewModel.taskDescription.value,
+                onNameChange = { viewModel.onNameChange(it) },
+                onDescriptionChange = { viewModel.onDescriptionChange(it) },
+                onAlarmChange = { viewModel.onAlarmChange() },
+                onCategoryClick = { viewModel.onCategoryClick() },
+                onScheduleDateClick = { viewModel.onScheduleDateClick() },
+                onScheduleTimeClick = { viewModel.onScheduleTimeClick() },
+            )
+        },
+        categoryPicker = {
+            EditScreenCategoryPicker(
+                visible = categoryPickerVisible,
+                taskCategories = taskCategories,
+                onDismiss = { viewModel.onCategoryPickerDismiss() },
+                onCategorySelected = { viewModel.onCategorySelected(it) }
+            )
+        },
+        datePicker = {
+            EditScreenDatePicker(
+                visible = datePickerVisible,
+                initialDateTimestamp = requireNotNull(task.scheduleDateTime)
+                    .toInstant().toEpochMilli(),
+                onDismiss = { viewModel.onDatePickerDismiss() },
+                onDateSelected = { viewModel.onDateSelected(it) }
+            )
+        },
+        timePicker = {
+            EditScreenTimePicker(
+                visible = timePickerVisible,
+                scheduleTime = requireNotNull(task.scheduleDateTime).toLocalTime(),
+                onDismiss = { viewModel.onTimePickerDismiss() },
+                onTimeSelected = { viewModel.onTimeSelected(it) }
+            )
+        },
         modifier = modifier,
     )
 }
 
-data class TaskEditScreenState(
-    val task: Task,
-    val name: String,
-    val description: String,
-    val taskCategories: List<TaskCategory>,
-    val categoryDialogVisible: Boolean,
-    val datePickerVisible: Boolean,
-    val timePickerVisible: Boolean
-)
-
 @Composable
 fun TaskEditScreen(
-    state: TaskEditScreenState,
     onSaveClick: () -> Unit,
     onBackClick: () -> Unit,
     onDoneClick: () -> Unit,
-    onNameChange: (String) -> Unit,
-    onDescriptionChange: (String) -> Unit,
-    onAlarmChange: () -> Unit,
-    onCategoryClick: () -> Unit,
-    onCategorySelected: (TaskCategory) -> Unit,
-    onCategorySelectDismissRequest: () -> Unit,
-    onDateClick: () -> Unit,
-    onDatePickerDismiss: () -> Unit,
-    onDateSelected: (timestamp: Long) -> Unit,
-    onTimeClick: () -> Unit,
-    onTimePickerDismiss: () -> Unit,
-    onTimeSelected: (time: LocalTime) -> Unit,
+    inputs: @Composable () -> Unit,
+    categoryPicker: @Composable () -> Unit,
+    datePicker: @Composable () -> Unit,
+    timePicker: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
@@ -140,53 +136,67 @@ fun TaskEditScreen(
         },
         modifier = modifier.fillMaxSize()
     ) { paddingValues ->
-
-
         Column(
             modifier = Modifier
                 .padding(paddingValues)
                 .consumeWindowInsets(paddingValues)
                 .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(ScreenTokens.ScreenPadding)
+                .padding(bottom = 64.dp)
         ) {
-            InputsContainer(
-                task = state.task,
-                name = state.name,
-                description = state.description,
-                onNameChange = onNameChange,
-                onDescriptionChange = onDescriptionChange,
-                onAlarmChange = onAlarmChange,
-                onCategoryClick = onCategoryClick,
-                onScheduleDateClick = onDateClick,
-                onScheduleTimeClick = onTimeClick,
-                modifier = Modifier
-                    .verticalScroll(scrollState)
-                    .padding(ScreenTokens.ScreenPadding)
-                    .padding(bottom = 64.dp)
-            )
+            inputs()
         }
     }
 
-    if (state.categoryDialogVisible) {
+    categoryPicker()
+    datePicker()
+    timePicker()
+}
+
+@Composable
+fun EditScreenCategoryPicker(
+    visible: Boolean,
+    taskCategories: List<TaskCategory>,
+    onDismiss: () -> Unit,
+    onCategorySelected: (category: TaskCategory) -> Unit,
+) {
+    if (visible) {
         TaskCategorySelectBottomSheet(
-            categories = state.taskCategories,
+            categories = taskCategories,
             onCategoryClick = onCategorySelected,
-            onDismissRequest = onCategorySelectDismissRequest
+            onDismissRequest = onDismiss
         )
     }
+}
 
-    if (state.datePickerVisible) {
+@Composable
+fun EditScreenDatePicker(
+    visible: Boolean,
+    initialDateTimestamp: Long,
+    onDismiss: () -> Unit,
+    onDateSelected: (date: Long) -> Unit,
+) {
+    if (visible) {
         TdsDatePicker(
-            initialDateTimestamp = requireNotNull(state.task.scheduleDateTime)
-                .toInstant().toEpochMilli(),
-            onDismiss = onDatePickerDismiss,
+            initialDateTimestamp = initialDateTimestamp,
+            onDismiss = onDismiss,
             onDateSelected = onDateSelected,
         )
     }
+}
 
-    if (state.timePickerVisible) {
+@Composable
+fun EditScreenTimePicker(
+    visible: Boolean,
+    scheduleTime: LocalTime,
+    onDismiss: () -> Unit,
+    onTimeSelected: (time: LocalTime) -> Unit,
+) {
+    if (visible) {
         TdsTimePicker(
-            initialTime = requireNotNull(state.task.scheduleDateTime).toLocalTime(),
-            onDismiss = onTimePickerDismiss,
+            initialTime = scheduleTime,
+            onDismiss = onDismiss,
             onTimeSelected = onTimeSelected,
         )
     }
@@ -312,40 +322,38 @@ private fun InputsContainer(
 @Preview
 @Composable
 private fun TaskEditScreenPreview() {
-    val state = TaskEditScreenState(
-        task = Task.empty(true).copy(
-            category = TaskCategory(
-                name = "Default",
-                color = Color.Magenta.toArgb(),
-                isDefault = false,
-                id = 0,
-            )
-        ),
-        name = "",
-        description = "",
-        taskCategories = emptyList(),
-        categoryDialogVisible = false,
-        datePickerVisible = false,
-        timePickerVisible = false,
+    val task = Task.empty(true).copy(
+        name = "Do something",
+        description = "Then do something else",
+        category = TaskCategory(
+            name = "Default",
+            color = Color.Magenta.toArgb(),
+            isDefault = false,
+            id = 0,
+        )
     )
+
     TodoSimplyTheme {
         TaskEditScreen(
-            state = state,
-            onSaveClick = {},
-            onBackClick = {},
-            onDoneClick = {},
-            onNameChange = {},
-            onDescriptionChange = {},
-            onAlarmChange = {},
-            onCategoryClick = {},
-            onCategorySelected = {},
-            onCategorySelectDismissRequest = {},
-            onDateClick = {},
-            onDatePickerDismiss = {},
-            onDateSelected = {},
-            onTimeClick = {},
-            onTimePickerDismiss = {},
-            onTimeSelected = {}
+            onSaveClick = { },
+            onBackClick = { },
+            onDoneClick = { },
+            inputs = {
+                InputsContainer(
+                    task = task,
+                    name = task.name,
+                    description = task.description,
+                    onNameChange = { },
+                    onDescriptionChange = { },
+                    onAlarmChange = { },
+                    onCategoryClick = { },
+                    onScheduleDateClick = { },
+                    onScheduleTimeClick = { },
+                )
+            },
+            categoryPicker = {},
+            datePicker = {},
+            timePicker = {}
         )
     }
 }

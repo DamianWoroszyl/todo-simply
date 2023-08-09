@@ -3,6 +3,7 @@ package com.fullrandomstudio.todosimply.task.data.repository
 import android.graphics.Color
 import com.fullrandomstudio.task.model.DateRange
 import com.fullrandomstudio.task.model.Task
+import com.fullrandomstudio.task.model.TaskAlarm
 import com.fullrandomstudio.task.model.TaskCategory
 import com.fullrandomstudio.todosimply.common.coroutine.Dispatcher
 import com.fullrandomstudio.todosimply.common.coroutine.TodoSimplyDispatchers.IO
@@ -25,7 +26,7 @@ class OfflineTaskRepository @Inject constructor(
 ) : TaskRepository {
 
     override fun getScheduledTasks(dateRange: DateRange): Flow<List<Task>> {
-        //todo
+        // todo
         val category = TaskCategory(
             name = "Home",
             color = Color.BLUE,
@@ -43,7 +44,7 @@ class OfflineTaskRepository @Inject constructor(
                 finishDate = ZonedDateTime.now(),
                 scheduled = true,
                 category = category,
-                taskAlarm = com.fullrandomstudio.task.model.TaskAlarm(0L, 1L, ZonedDateTime.now().plusDays(5)),
+                taskAlarm = TaskAlarm(0L, 1L, ZonedDateTime.now().plusDays(5)),
                 softDeleted = false,
                 id = scheduleTime.toEpochSecond(),
             )

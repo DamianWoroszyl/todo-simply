@@ -29,5 +29,3 @@ class DefaultResourceProvider @Inject constructor(
         return context.resources.getIntArray(resId)
     }
 }
-
-

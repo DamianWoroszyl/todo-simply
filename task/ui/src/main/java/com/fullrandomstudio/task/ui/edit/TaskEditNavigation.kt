@@ -1,3 +1,5 @@
+@file:Suppress("ConstPropertyName", "TopLevelPropertyNaming")
+
 package com.fullrandomstudio.task.ui.edit
 
 import androidx.lifecycle.SavedStateHandle
@@ -10,10 +12,10 @@ import com.fullrandomstudio.todosimply.task.domain.TaskEditType
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-private const val argTaskId = "taskId"
-private const val argScheduled = "scheduled"
-private const val argTaskEditType = "taskEditType"
-private const val argSelectedDate = "selectedDate"
+private const val ArgTaskId = "taskId"
+private const val ArgScheduled = "scheduled"
+private const val ArgTaskEditType = "taskEditType"
+private const val ArgSelectedDate = "selectedDate"
 
 private val selectedDateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
 
@@ -24,18 +26,21 @@ internal class TaskEditArgs(
     val selectedDate: LocalDate?
 ) {
     constructor(savedStateHandle: SavedStateHandle) : this(
-        taskId = savedStateHandle[argTaskId],
-        scheduled = requireNotNull(savedStateHandle[argScheduled]),
-        taskEditType = requireNotNull(savedStateHandle[argTaskEditType]),
+        taskId = savedStateHandle[ArgTaskId],
+        scheduled = requireNotNull(savedStateHandle[ArgScheduled]),
+        taskEditType = requireNotNull(savedStateHandle[ArgTaskEditType]),
         selectedDate = LocalDate.parse(
-            savedStateHandle[argSelectedDate], selectedDateFormatter
+            savedStateHandle[ArgSelectedDate],
+            selectedDateFormatter
         ),
     )
 }
 
 // todo dw find patterns to creating routes
-const val TASK_EDIT_NAV_ROUTE =
-    "task/edit?taskId={$argTaskId}&scheduled={$argScheduled}&taskEditType={$argTaskEditType}&selectedDate={$argSelectedDate}"
+const val TASK_EDIT_NAV_ROUTE = "task/edit?taskId={$ArgTaskId}&" +
+        "scheduled={$ArgScheduled}&" +
+        "taskEditType={$ArgTaskEditType}&" +
+        "selectedDate={$ArgSelectedDate}"
 
 fun NavController.navigateToTaskEdit(
     taskId: Long,
@@ -70,10 +75,10 @@ fun NavGraphBuilder.taskEdit() {
     composable(
         route = TASK_EDIT_NAV_ROUTE,
         arguments = listOf(
-            navArgument(argTaskId) { nullable = true },
-            navArgument(argScheduled) { defaultValue = true },
-            navArgument(argTaskEditType) { defaultValue = TaskEditType.EDIT },
-            navArgument(argSelectedDate) { nullable = true }
+            navArgument(ArgTaskId) { nullable = true },
+            navArgument(ArgScheduled) { defaultValue = true },
+            navArgument(ArgTaskEditType) { defaultValue = TaskEditType.EDIT },
+            navArgument(ArgSelectedDate) { nullable = true }
         )
     ) {
         TaskEditScreen()

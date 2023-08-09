@@ -2,7 +2,6 @@
 
 package com.fullrandomstudio.designsystem.theme.component
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
@@ -15,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.fullrandomstudio.designsystem.theme.TodoSimplyTheme
@@ -61,7 +59,6 @@ fun TdsDatePicker(
                 Text(stringResource(id = R.string.ok))
             }
         },
-        modifier = Modifier.fillMaxSize()
     ) {
         DatePicker(
             state = datePickerState,

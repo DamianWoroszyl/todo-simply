@@ -37,6 +37,7 @@ import com.fullrandomstudio.designsystem.theme.TodoSimplyTheme
 import com.fullrandomstudio.designsystem.theme.component.TdsSeparatorHorizontal
 import com.fullrandomstudio.designsystem.theme.util.pxToDp
 import com.fullrandomstudio.task.model.TaskCategory
+import com.fullrandomstudio.todosimply.common.R
 import kotlinx.coroutines.launch
 
 @Composable
@@ -116,7 +117,7 @@ internal fun TaskCategoryItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            imageVector = ImageVector.vectorResource(id = com.fullrandomstudio.todosimply.common.R.drawable.ic_category),
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_category),
             contentDescription = null,
             tint = Color(category.color),
             modifier = Modifier

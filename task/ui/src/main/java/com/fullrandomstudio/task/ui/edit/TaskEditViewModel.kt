@@ -48,10 +48,10 @@ class TaskEditViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            //todo dw wrap in methods
+            // todo dw wrap in methods
             _categories.value = taskCategoryRepository.getAll()
 
-            //todo dw wrap in methods
+            // todo dw wrap in methods
             val taskResult: Result<Task> = prepareTaskToEditUseCase(
                 taskEditType = args.taskEditType,
                 taskId = args.taskId,
@@ -64,7 +64,7 @@ class TaskEditViewModel @Inject constructor(
                     _task.value = it
                 },
                 {
-                    //todo dw show error and go back
+                    // todo dw show error and go back
                 }
             )
         }
@@ -98,7 +98,7 @@ class TaskEditViewModel @Inject constructor(
         }
     }
 
-    fun onCategorySelectDismissRequest() {
+    fun onCategoryPickerDismiss() {
         _categoryDialogVisible.value = false
     }
 
@@ -114,7 +114,7 @@ class TaskEditViewModel @Inject constructor(
         _datePickerDialogVisible.value = true
     }
 
-    fun onDismissDatePicker() {
+    fun onDatePickerDismiss() {
         _datePickerDialogVisible.value = false
     }
 
@@ -124,7 +124,8 @@ class TaskEditViewModel @Inject constructor(
             val time = requireNotNull(it.scheduleDateTime?.toLocalTime())
             it.copy(
                 scheduleDateTime = ZonedDateTime.ofInstant(
-                    Instant.ofEpochMilli(timestamp), ZoneId.systemDefault()
+                    Instant.ofEpochMilli(timestamp),
+                    ZoneId.systemDefault()
                 )
                     .withHour(time.hour)
                     .withMinute(time.minute)

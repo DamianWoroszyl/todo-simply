@@ -14,5 +14,5 @@ interface TaskDao {
     fun insert(items: List<TaskEntity>)
 
     @Query("""SELECT * FROM task_full_view WHERE id = :taskId""")
-    fun getFullView(taskId:Long): TaskFullView?
+    fun getFullView(taskId: Long): TaskFullView?
 }
