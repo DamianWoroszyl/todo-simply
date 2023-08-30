@@ -5,12 +5,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fullrandomstudio.core.ui.Navigator
+import com.fullrandomstudio.core.ui.PopBackstack
 import com.fullrandomstudio.task.model.Task
 import com.fullrandomstudio.task.model.TaskAlarm
 import com.fullrandomstudio.task.model.TaskCategory
-import com.fullrandomstudio.todosimply.task.data.repository.TaskCategoryRepository
+import com.fullrandomstudio.todosimply.task.domain.GetAllCategoriesUseCase
 import com.fullrandomstudio.todosimply.task.domain.PrepareTaskToEditUseCase
+import com.fullrandomstudio.todosimply.task.domain.SaveTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -22,16 +27,19 @@ import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
+@Suppress("TooManyFunctions")
 @HiltViewModel
 class TaskEditViewModel @Inject constructor(
     private val prepareTaskToEditUseCase: PrepareTaskToEditUseCase,
-    private val taskCategoryRepository: TaskCategoryRepository,
+    private val saveTaskUseCase: SaveTaskUseCase,
+    private val getAllCategoriesUseCase: GetAllCategoriesUseCase,
+    val navigator: Navigator,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val args: TaskEditArgs = TaskEditArgs(savedStateHandle)
 
-    val taskName: MutableState<String> = mutableStateOf("")
+    val taskName: MutableState<String> = mutableStateOf("") // todo persist across process death?
     val taskDescription: MutableState<String> = mutableStateOf("")
 
     private val _task: MutableStateFlow<Task> = MutableStateFlow(Task.empty(args.scheduled))
@@ -39,19 +47,31 @@ class TaskEditViewModel @Inject constructor(
     private val _categories: MutableStateFlow<List<TaskCategory>> = MutableStateFlow(emptyList())
     private val _datePickerDialogVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val _timePickerDialogVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val _validationErrors: MutableStateFlow<ImmutableSet<TaskEditValidationError>> =
+        MutableStateFlow(
+            emptyList<TaskEditValidationError>().toImmutableSet()
+        )
 
     val task: StateFlow<Task> = _task
     val categoryPickerVisible: StateFlow<Boolean> = _categoryDialogVisible
     val taskCategories: StateFlow<List<TaskCategory>> = _categories
     val datePickerVisible: StateFlow<Boolean> = _datePickerDialogVisible
     val timePickerVisible: StateFlow<Boolean> = _timePickerDialogVisible
+    val validationErrors: StateFlow<ImmutableSet<TaskEditValidationError>> = _validationErrors
 
     init {
-        viewModelScope.launch {
-            // todo dw wrap in methods
-            _categories.value = taskCategoryRepository.getAll()
+        setupCategories()
+        setupTask()
+    }
 
-            // todo dw wrap in methods
+    private fun setupCategories() {
+        viewModelScope.launch {
+            _categories.value = getAllCategoriesUseCase()
+        }
+    }
+
+    private fun setupTask() {
+        viewModelScope.launch {
             val taskResult: Result<Task> = prepareTaskToEditUseCase(
                 taskEditType = args.taskEditType,
                 taskId = args.taskId,
@@ -62,9 +82,11 @@ class TaskEditViewModel @Inject constructor(
             taskResult.fold(
                 {
                     _task.value = it
+                    taskName.value = it.name
+                    taskDescription.value = it.description
                 },
                 {
-                    // todo dw show error and go back
+                    // todo show error and go back in later task
                 }
             )
         }
@@ -72,6 +94,11 @@ class TaskEditViewModel @Inject constructor(
 
     fun onNameChange(value: String) {
         taskName.value = value
+
+        if (_validationErrors.value.contains(TaskEditValidationError.EMPTY_NAME)) {
+            _validationErrors.value =
+                _validationErrors.value.minus(TaskEditValidationError.EMPTY_NAME).toImmutableSet()
+        }
     }
 
     fun onDescriptionChange(value: String) {
@@ -79,7 +106,30 @@ class TaskEditViewModel @Inject constructor(
     }
 
     fun onSaveClick() {
-        TODO("Not yet implemented")
+        val name = taskName.value
+        val validationResult = validate(name)
+        if (validationResult.isNotEmpty()) {
+            _validationErrors.value = validationResult.toImmutableSet()
+            return
+        }
+
+        val task = task.value.copy(
+            name = name,
+            description = taskDescription.value
+        )
+
+        viewModelScope.launch {
+            saveTaskUseCase(task)
+            navigator.navigate(PopBackstack)
+        }
+    }
+
+    private fun validate(name: String): List<TaskEditValidationError> {
+        if (name.isBlank()) {
+            return listOf(TaskEditValidationError.EMPTY_NAME)
+        }
+
+        return emptyList()
     }
 
     fun onDoneClick() {
@@ -87,14 +137,14 @@ class TaskEditViewModel @Inject constructor(
     }
 
     fun onAlarmChange() {
-        _task.update {
-            val newAlarm: TaskAlarm? = if (it.hasAlarm) {
+        _task.update { task ->
+            val newAlarm: TaskAlarm? = if (task.hasAlarm) {
                 null
             } else {
-                TaskAlarm(0, it.id, requireNotNull(it.scheduleDateTime))
+                TaskAlarm(0, task.id, requireNotNull(task.scheduleDateTime))
             }
 
-            it.copy(taskAlarm = newAlarm)
+            task.copy(taskAlarm = newAlarm)
         }
     }
 

@@ -7,6 +7,7 @@ import com.fullrandomstudio.task.model.Task
 import com.fullrandomstudio.task.model.TaskCategory
 import com.fullrandomstudio.task.ui.list.item.TaskListItemUiState
 import com.fullrandomstudio.todosimply.task.data.config.TaskAction
+import java.time.LocalDateTime
 import java.time.ZonedDateTime
 
 @Composable
@@ -14,9 +15,9 @@ internal fun previewDoneTaskUiState(): TaskListItemUiState = TaskListItemUiState
     task = Task(
         name = "Some task",
         description = "Some task description",
-        creationDate = ZonedDateTime.now().minusDays(5),
+        creationDateTimeUtc = LocalDateTime.now().minusDays(5),
         scheduleDateTime = ZonedDateTime.now().plusDays(5),
-        finishDate = ZonedDateTime.now(),
+        finishDateTimeUtc = LocalDateTime.now(),
         scheduled = true,
         category = TaskCategory(
             name = "Home",
@@ -37,9 +38,9 @@ internal fun previewTodoTaskUiState(): TaskListItemUiState = TaskListItemUiState
     task = Task(
         name = "Some task",
         description = "Some task description",
-        creationDate = ZonedDateTime.now().minusDays(5),
+        creationDateTimeUtc = LocalDateTime.now().minusDays(5),
         scheduleDateTime = ZonedDateTime.now().plusDays(5),
-        finishDate = null,
+        finishDateTimeUtc = null,
         scheduled = true,
         category = TaskCategory(
             name = "Home",

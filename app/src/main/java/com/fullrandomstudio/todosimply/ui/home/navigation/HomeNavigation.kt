@@ -1,21 +1,47 @@
+@file:Suppress("MatchingDeclarationName")
+
 package com.fullrandomstudio.todosimply.ui.home.navigation
 
-import androidx.navigation.NavController
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.fullrandomstudio.todosimply.ui.home.HomeScreen
+import com.fullrandomstudio.task.ui.edit.TaskEditArgs
+import com.fullrandomstudio.task.ui.scheduled.ScheduledTasksPagerScreen
 
-const val HOME_NAV_ROUTE = "home"
+sealed class HomeTabScreen {
+    abstract val route: String
 
-fun NavController.navigateToHome(navOptions: NavOptions? = null) {
-    this.navigate(HOME_NAV_ROUTE, navOptions)
+    object ScheduledTasks : HomeTabScreen() {
+        override val route: String = "home/scheduledtasks"
+    }
 }
 
-fun NavGraphBuilder.homeScreen(mainNavController: NavController) {
-    composable(
-        route = HOME_NAV_ROUTE
+@Composable
+internal fun HomeNavigation(
+    navController: NavHostController,
+    onEditTask: (taskEditArgs: TaskEditArgs) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    NavHost(
+        navController = navController,
+        startDestination = HomeTabScreen.ScheduledTasks.route,
+        modifier = modifier
     ) {
-        HomeScreen()
+        homeScheduledTasks(onEditTask)
+    }
+}
+
+private fun NavGraphBuilder.homeScheduledTasks(
+    onEditTask: (taskEditArgs: TaskEditArgs) -> Unit,
+) {
+    composable(
+        route = HomeTabScreen.ScheduledTasks.route,
+    ) {
+        ScheduledTasksPagerScreen(
+            onEditTask = onEditTask,
+        )
     }
 }

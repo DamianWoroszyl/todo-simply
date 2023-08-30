@@ -1,5 +1,6 @@
 package com.fullrandomstudio.task.model
 
+import java.time.LocalDateTime
 import java.time.ZonedDateTime
 
 data class Task(
@@ -8,14 +9,14 @@ data class Task(
     val description: String,
     val category: TaskCategory,
     val scheduled: Boolean,
-    val creationDate: ZonedDateTime,
+    val creationDateTimeUtc: LocalDateTime,
     val scheduleDateTime: ZonedDateTime?,
-    val finishDate: ZonedDateTime?,
+    val finishDateTimeUtc: LocalDateTime?,
     val taskAlarm: TaskAlarm?,
     val softDeleted: Boolean,
 ) {
     val hasAlarm: Boolean = taskAlarm != null
-    val isFinished: Boolean = finishDate != null
+    val isFinished: Boolean = finishDateTimeUtc != null
     val isScheduled: Boolean = scheduleDateTime != null
     val isGeneral: Boolean = scheduleDateTime == null
 
@@ -25,9 +26,9 @@ data class Task(
             description = "",
             category = TaskCategory("", 0, false, 0),
             scheduled = scheduled,
-            creationDate = ZonedDateTime.now(),
+            creationDateTimeUtc = LocalDateTime.now(),
             scheduleDateTime = if (scheduled) ZonedDateTime.now() else null,
-            finishDate = null,
+            finishDateTimeUtc = null,
             taskAlarm = if (scheduled) TaskAlarm(0, 0, ZonedDateTime.now()) else null,
             softDeleted = false,
             id = 0

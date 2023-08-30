@@ -6,7 +6,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {
 
-    fun getScheduledTasks(timeRange: DateRange): Flow<List<Task>>
-    suspend fun saveTask(task: Task): Result<Long>
+    fun getScheduledTasks(dateRange: DateRange): Flow<List<Task>>
+    suspend fun saveTask(task: Task): Long
     suspend fun getTask(taskId: Long): Task?
+    suspend fun deleteTask(taskId: Long)
 }

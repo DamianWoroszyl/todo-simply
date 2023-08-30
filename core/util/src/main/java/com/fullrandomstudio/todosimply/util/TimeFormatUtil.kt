@@ -2,6 +2,7 @@ package com.fullrandomstudio.todosimply.util
 
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -42,6 +43,11 @@ fun formatTimeLocalized(time: LocalTime): String =
         .format(time)
 
 fun formatDateLocalized(date: LocalDate): String =
+    DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+        .withLocale(Locale.getDefault())
+        .format(date)
+
+fun formatDateLocalized(date: LocalDateTime): String =
     DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
         .withLocale(Locale.getDefault())
         .format(date)

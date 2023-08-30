@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.annotation.ArrayRes
 import com.fullrandomstudio.initializer.AppInitializer
 import com.fullrandomstudio.task.model.TaskCategory
-import com.fullrandomstudio.todosimply.common.coroutine.ApplicationScope
+import com.fullrandomstudio.todosimply.common.coroutine.ApplicationCoroutineScope
 import com.fullrandomstudio.todosimply.task.data.R
 import com.fullrandomstudio.todosimply.task.data.repository.TaskCategoryRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -15,14 +15,14 @@ import javax.inject.Inject
 
 internal class TaskCategoryInitializer @Inject constructor(
     @ApplicationContext private val appContext: Context,
-    @ApplicationScope private val applicationScope: CoroutineScope,
+    @ApplicationCoroutineScope private val applicationScope: CoroutineScope,
     private val taskCategoryRepository: TaskCategoryRepository
 ) : AppInitializer {
 
-    override fun initialize(application: Application) {
+    override suspend fun initialize(application: Application) {
         applicationScope.launch {
             setupInitialCategories()
-        }
+        }.join()
     }
 
     private suspend fun setupInitialCategories() {

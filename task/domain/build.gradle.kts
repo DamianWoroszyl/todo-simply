@@ -11,5 +11,7 @@ dependencies {
     implementation(project(":task:model"))
     implementation(project(":task:data"))
 
+    implementation(libs.kotlinx.coroutines.core)
+
     implementation(libs.javax.inject)
 }

@@ -31,12 +31,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fullrandomstudio.core.ui.CollectNavigation
+import com.fullrandomstudio.core.ui.PopBackstack
 import com.fullrandomstudio.designsystem.theme.TodoSimplyTheme
 import com.fullrandomstudio.designsystem.theme.component.TdsAppBarIconButton
 import com.fullrandomstudio.designsystem.theme.component.TdsClearTopAppBar
 import com.fullrandomstudio.designsystem.theme.component.TdsDatePicker
 import com.fullrandomstudio.designsystem.theme.component.TdsExtendedFloatingActionButton
 import com.fullrandomstudio.designsystem.theme.component.TdsSeparatorHorizontal
+import com.fullrandomstudio.designsystem.theme.component.TdsSupportingTextError
 import com.fullrandomstudio.designsystem.theme.component.TdsTextField
 import com.fullrandomstudio.designsystem.theme.component.TdsTimePicker
 import com.fullrandomstudio.designsystem.theme.token.ScreenTokens
@@ -47,11 +50,16 @@ import com.fullrandomstudio.task.model.TaskCategory
 import com.fullrandomstudio.todosimply.task.ui.R
 import com.fullrandomstudio.todosimply.util.formatDateLocalized
 import com.fullrandomstudio.todosimply.util.formatTimeLocalized
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.toImmutableSet
 import java.time.LocalTime
 import com.fullrandomstudio.todosimply.common.R as CommonR
 
+// todo use remember saveable:
+//  https://developer.android.com/jetpack/compose/state
 @Composable
 fun TaskEditScreen(
+    onPop: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: TaskEditViewModel = hiltViewModel()
 ) {
@@ -60,16 +68,26 @@ fun TaskEditScreen(
     val categoryPickerVisible by viewModel.categoryPickerVisible.collectAsStateWithLifecycle()
     val datePickerVisible by viewModel.datePickerVisible.collectAsStateWithLifecycle()
     val timePickerVisible by viewModel.timePickerVisible.collectAsStateWithLifecycle()
+    val validationErrors by viewModel.validationErrors.collectAsStateWithLifecycle()
+
+    CollectNavigation(
+        navigator = viewModel.navigator
+    ) { _, command ->
+        when (command) {
+            PopBackstack -> onPop()
+        }
+    }
 
     TaskEditScreen(
         onSaveClick = { viewModel.onSaveClick() },
-        onBackClick = { TODO() },
+        onBackClick = onPop,
         onDoneClick = { viewModel.onDoneClick() },
         inputs = {
             InputsContainer(
                 task = task,
                 name = viewModel.taskName.value,
                 description = viewModel.taskDescription.value,
+                validationErrors = validationErrors,
                 onNameChange = { viewModel.onNameChange(it) },
                 onDescriptionChange = { viewModel.onDescriptionChange(it) },
                 onAlarmChange = { viewModel.onAlarmChange() },
@@ -230,6 +248,7 @@ private fun InputsContainer(
     name: String,
     description: String,
     task: Task,
+    validationErrors: ImmutableSet<TaskEditValidationError>,
     onNameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
     onAlarmChange: () -> Unit,
@@ -241,7 +260,6 @@ private fun InputsContainer(
     Column(
         modifier = modifier
     ) {
-
         TdsTextField(
             value = name,
             onValueChange = onNameChange,
@@ -251,10 +269,16 @@ private fun InputsContainer(
                 capitalization = KeyboardCapitalization.Sentences,
                 imeAction = ImeAction.Next
             ),
+            supportingText = {
+                TdsSupportingTextError(
+                    text = stringResource(id = R.string.edit_task_error_empty_name),
+                    validationErrors.contains(TaskEditValidationError.EMPTY_NAME)
+                )
+            },
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         TdsTextField(
             value = description,
@@ -287,7 +311,7 @@ private fun InputsContainer(
 
             EditAttributeWithText(
                 label = stringResource(id = CommonR.string.task_label_date),
-                body = formatDateLocalized(requireNotNull(task.scheduleDateTime)),
+                body = formatDateLocalized(requireNotNull(task.scheduleDateTime?.toLocalDate())),
                 iconRes = CommonR.drawable.ic_calendar,
                 onClick = onScheduleDateClick,
             )
@@ -299,7 +323,7 @@ private fun InputsContainer(
 
             EditAttributeWithText(
                 label = stringResource(id = CommonR.string.task_label_time),
-                body = formatTimeLocalized(requireNotNull(task.scheduleDateTime)),
+                body = formatTimeLocalized(requireNotNull(task.scheduleDateTime?.toLocalTime())),
                 iconRes = CommonR.drawable.ic_schedule,
                 onClick = onScheduleTimeClick,
             )
@@ -343,6 +367,7 @@ private fun TaskEditScreenPreview() {
                     task = task,
                     name = task.name,
                     description = task.description,
+                    validationErrors = emptySet<TaskEditValidationError>().toImmutableSet(),
                     onNameChange = { },
                     onDescriptionChange = { },
                     onAlarmChange = { },

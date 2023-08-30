@@ -2,10 +2,12 @@ package com.fullrandomstudio.todosimply.task.domain
 
 import com.fullrandomstudio.task.model.Task
 import com.fullrandomstudio.task.model.TaskAlarm
+import com.fullrandomstudio.task.model.UTC_ZONE_ID
 import com.fullrandomstudio.todosimply.task.data.repository.TaskCategoryRepository
 import com.fullrandomstudio.todosimply.task.data.repository.TaskRepository
 import com.fullrandomstudio.todosimply.task.domain.exception.TaskNotFound
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -31,7 +33,11 @@ class PrepareTaskToEditUseCase @Inject constructor(
 
         val finalTask: Task = when (taskEditType) {
             TaskEditType.EDIT -> requireNotNull(task)
-            TaskEditType.CREATE -> createNewEmptyTask(scheduled = scheduled, selectedDay = selectedDate)
+            TaskEditType.CREATE -> createNewEmptyTask(
+                scheduled = scheduled,
+                selectedDay = selectedDate
+            )
+
             TaskEditType.DUPLICATE -> createTaskDuplicate(originalTask = requireNotNull(task))
             TaskEditType.MOVE_FROM_GENERAL_TO_SCHEDULED ->
                 prepareTaskToMoveToScheduled(originalTask = requireNotNull(task))
@@ -44,15 +50,15 @@ class PrepareTaskToEditUseCase @Inject constructor(
         scheduled: Boolean,
         selectedDay: LocalDate?
     ): Task {
-        val scheduleTime: ZonedDateTime? = if (scheduled) createTaskDateTime(selectedDay) else null
+        val scheduleTime: ZonedDateTime? = if (scheduled) createNewTaskDateTime(selectedDay) else null
         return Task(
             name = "",
             description = "",
             category = taskCategoryRepository.getDefaultCategory(),
             scheduled = scheduled,
-            creationDate = ZonedDateTime.now(),
+            creationDateTimeUtc = currentLocalDateTimeUtc(),
             scheduleDateTime = scheduleTime,
-            finishDate = null,
+            finishDateTimeUtc = null,
             softDeleted = false,
             id = 0,
             taskAlarm = TaskAlarm(0L, 0L, requireNotNull(scheduleTime))
@@ -60,7 +66,7 @@ class PrepareTaskToEditUseCase @Inject constructor(
     }
 
     private fun prepareTaskToMoveToScheduled(originalTask: Task): Task {
-        val scheduleTime: ZonedDateTime = createTaskDateTime()
+        val scheduleTime: ZonedDateTime = createNewTaskDateTime()
         return originalTask.copy(
             scheduleDateTime = scheduleTime,
             scheduled = true,
@@ -71,13 +77,16 @@ class PrepareTaskToEditUseCase @Inject constructor(
     private fun createTaskDuplicate(originalTask: Task): Task {
         return originalTask.copy(
             softDeleted = false,
-            creationDate = ZonedDateTime.now(),
-            finishDate = null,
+            creationDateTimeUtc = currentLocalDateTimeUtc(),
+            finishDateTimeUtc = null,
             id = 0
         )
     }
 
-    private fun createTaskDateTime(selectedDate: LocalDate? = null): ZonedDateTime {
+    private fun currentLocalDateTimeUtc(): LocalDateTime =
+        ZonedDateTime.now(UTC_ZONE_ID).toLocalDateTime()
+
+    private fun createNewTaskDateTime(selectedDate: LocalDate? = null): ZonedDateTime {
         val date = selectedDate ?: LocalDate.now()
         return LocalTime.now()
             .plusHours(SCHEDULE_TASK_OFFSET_HOURS)

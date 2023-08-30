@@ -6,7 +6,6 @@ import com.fullrandomstudio.todosimply.task.database.entity.TaskAlarmEntity
 import com.fullrandomstudio.todosimply.task.database.entity.TaskCategoryEntity
 import com.fullrandomstudio.todosimply.task.database.entity.TaskEntity
 
-// todo dw test
 @DatabaseView(
     viewName = "task_full_view",
     value =

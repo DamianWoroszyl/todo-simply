@@ -3,7 +3,6 @@ package com.fullrandomstudio.designsystem.theme
 import android.os.Build
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -42,21 +41,16 @@ val LightExtendedColors = ExtendedColors(
     separator = md_theme_light_primary
 )
 
-// todo dw token for default screen padding
 @Suppress("UNUSED_PARAMETER")
 @Composable
 fun TodoSimplyTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    val extendedShapes = ExtendedShapes(
-        fab = CircleShape
-    )
-
     val colorScheme = LightColorScheme
 
     CompositionLocalProvider(
-        LocalExtendedShapes provides extendedShapes,
+        LocalExtendedShapes provides TodoSimplyExtendedShapes,
         LocalExtendedColors provides LightExtendedColors
     ) {
         MaterialTheme(

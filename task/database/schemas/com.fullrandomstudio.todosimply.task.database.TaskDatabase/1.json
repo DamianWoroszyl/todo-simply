@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "48d607e6f0c41c0fd4f508af81bbeaa2",
+    "identityHash": "16da58308471f18fa54fb1028b7132d8",
     "entities": [
       {
         "tableName": "task",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `description` TEXT NOT NULL, `scheduled` INTEGER NOT NULL, `soft_deleted` INTEGER NOT NULL, `creation_date` TEXT NOT NULL, `schedule_date` TEXT NOT NULL, `finish_date` TEXT NOT NULL, `category_id` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `description` TEXT NOT NULL, `scheduled` INTEGER NOT NULL, `soft_deleted` INTEGER NOT NULL, `creation_date_time_utc` TEXT NOT NULL, `schedule_date_time` TEXT, `finish_date_time_utc` TEXT, `category_id` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
           {
             "fieldPath": "name",
@@ -33,22 +33,22 @@
             "notNull": true
           },
           {
-            "fieldPath": "creationDate",
-            "columnName": "creation_date",
+            "fieldPath": "creationDateTimeUtc",
+            "columnName": "creation_date_time_utc",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "scheduleDate",
-            "columnName": "schedule_date",
+            "fieldPath": "scheduleDateTime",
+            "columnName": "schedule_date_time",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
-            "fieldPath": "finishDate",
-            "columnName": "finish_date",
+            "fieldPath": "finishDateTimeUtc",
+            "columnName": "finish_date_time_utc",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "categoryId",
@@ -151,7 +151,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '48d607e6f0c41c0fd4f508af81bbeaa2')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '16da58308471f18fa54fb1028b7132d8')"
     ]
   }
 }

@@ -5,5 +5,5 @@ import java.time.ZonedDateTime
 data class TaskAlarm(
     val id: Long,
     val taskId: Long,
-    val alarmDate: ZonedDateTime
+    val alarmDateTime: ZonedDateTime
 )
