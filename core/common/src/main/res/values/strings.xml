@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+
     <string name="label_scheduled_tasks">Scheduled tasks</string>
     <string name="label_general_tasks">General tasks</string>
     <string name="label_shopping_lists">Shopping lists</string>
     <string name="label_task_categories">Categories</string>
     <string name="label_settings">Settings</string>
+
+    <string name="task_label_name">Name</string>
+    <string name="task_label_description">Description</string>
+    <string name="task_label_category">Category</string>
+    <string name="task_label_time">Time</string>
+    <string name="task_label_date">Date</string>
+    <string name="task_label_alarm">Alarm</string>
 </resources>

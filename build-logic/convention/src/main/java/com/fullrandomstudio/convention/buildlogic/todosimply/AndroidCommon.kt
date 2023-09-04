@@ -3,12 +3,12 @@ package com.fullrandomstudio.convention.buildlogic.todosimply
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Project
 
-const val COMPILE_SDK = 33
+const val COMPILE_SDK = 34
 const val MIN_SDK = 24
-const val TARGET_SDK = 33
+const val TARGET_SDK = 34
 
 internal fun Project.configureAndroidCommon(
-    extension: CommonExtension<*, *, *, *>,
+    extension: CommonExtension<*, *, *, *, *>,
 ) {
     extension.apply {
         compileSdk = COMPILE_SDK

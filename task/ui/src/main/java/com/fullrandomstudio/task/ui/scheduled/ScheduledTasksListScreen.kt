@@ -10,8 +10,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fullrandomstudio.core.ui.CollectNavigation
 import com.fullrandomstudio.designsystem.theme.TodoSimplyTheme
-import com.fullrandomstudio.task.model.DateRange
+import com.fullrandomstudio.task.ui.common.EditTask
+import com.fullrandomstudio.task.ui.edit.TaskEditArgs
 import com.fullrandomstudio.task.ui.list.item.TaskCategoryMarkerListItem
 import com.fullrandomstudio.task.ui.list.item.TaskCategoryMarkerListItemUiState
 import com.fullrandomstudio.task.ui.list.item.TaskListItem
@@ -25,11 +27,20 @@ import com.fullrandomstudio.todosimply.task.data.config.TaskAction
 
 @Composable
 fun ScheduledTasksListScreen(
-    dateRange: DateRange,
+    onEditTask: (taskEditArgs: TaskEditArgs) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ScheduledTasksListViewModel
 ) {
     val items by viewModel.items.collectAsStateWithLifecycle()
+
+    CollectNavigation(
+        navigator = viewModel.navigator,
+        autoCollect = true,
+    ) { _, command ->
+        when (command) {
+            is EditTask -> onEditTask(command.args)
+        }
+    }
 
     ScheduledTasksListScreen(
         items = items,

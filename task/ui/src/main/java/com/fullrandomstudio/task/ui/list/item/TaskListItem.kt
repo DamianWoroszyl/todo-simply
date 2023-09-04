@@ -114,7 +114,7 @@ internal fun TaskListItem(
                 }
 
                 Text(
-                    text = state.task.title,
+                    text = state.task.name,
                     style = textStyle,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
@@ -129,7 +129,7 @@ internal fun TaskListItem(
 
                 if (state.task.isScheduled) {
                     Text(
-                        text = formatTimeLocalized(requireNotNull(state.task.scheduleDate)),
+                        text = formatTimeLocalized(requireNotNull(state.task.scheduleDateTime?.toLocalTime())),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.constrainAs(time) {

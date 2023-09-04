@@ -1,6 +1,9 @@
 package com.fullrandomstudio.todosimply.util
 
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -25,6 +28,26 @@ fun formatDayNameAndDateLocalized(zonedDateTime: ZonedDateTime): String =
                 .format(zonedDateTime)
 
 fun formatDateLocalized(zonedDateTime: ZonedDateTime): String =
-    DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+    DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
         .withLocale(Locale.getDefault())
         .format(zonedDateTime)
+
+fun formatDateWithDay(zonedDateTime: ZonedDateTime): String =
+    DateTimeFormatter.ofPattern("EEE dd.MM.yyyy")
+        .withLocale(Locale.getDefault())
+        .format(zonedDateTime)
+
+fun formatTimeLocalized(time: LocalTime): String =
+    DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+        .withLocale(Locale.getDefault())
+        .format(time)
+
+fun formatDateLocalized(date: LocalDate): String =
+    DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+        .withLocale(Locale.getDefault())
+        .format(date)
+
+fun formatDateLocalized(date: LocalDateTime): String =
+    DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+        .withLocale(Locale.getDefault())
+        .format(date)

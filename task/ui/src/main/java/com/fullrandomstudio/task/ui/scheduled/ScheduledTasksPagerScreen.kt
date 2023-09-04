@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package com.fullrandomstudio.task.ui.scheduled
 
 import android.app.Activity
@@ -7,9 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,8 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.fullrandomstudio.core.ui.CollectNavigation
 import com.fullrandomstudio.designsystem.theme.TodoSimplyTheme
 import com.fullrandomstudio.task.model.DateRange
+import com.fullrandomstudio.task.ui.common.EditTask
+import com.fullrandomstudio.task.ui.edit.TaskEditArgs
 import com.fullrandomstudio.task.ui.scheduled.ScheduledTasksListViewModel.ScheduledTasksListViewModelAssistedFactory
 import com.fullrandomstudio.todosimply.task.ui.R
 import dagger.hilt.EntryPoint
@@ -35,17 +40,21 @@ import dagger.hilt.android.components.ActivityComponent
 
 @Composable
 fun ScheduledTasksPagerScreen(
+    onEditTask: (taskEditArgs: TaskEditArgs) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ScheduledTasksPagerViewModel = hiltViewModel()
 ) {
+    val pagerState = rememberPagerState(initialPage = viewModel.initPage) {
+        viewModel.pageCount
+    }
+
     ScheduledTasksPagerScreen(
-        onAddTaskClick = { viewModel.onAddTaskClick() },
-        initialPage = viewModel.initPage,
-        pageCount = viewModel.pageCount,
+        pagerState = pagerState,
+        onAddTaskClick = { viewModel.onAddTaskClick(pagerState.currentPage) },
         pageScreenProvider = { page ->
             val dateRange: DateRange = viewModel.dateRangeForPage(page)
             ScheduledTasksListScreen(
-                dateRange = dateRange,
+                onEditTask = onEditTask,
                 viewModel = viewModel(
                     key = dateRange.toString(),
                     factory = scheduledTasksListViewModelProviderFactory(dateRange)
@@ -54,15 +63,23 @@ fun ScheduledTasksPagerScreen(
         },
         modifier = modifier
     )
+
+    CollectNavigation(
+        navigator = viewModel.navigator,
+        autoCollect = true,
+    ) { _, command ->
+        when (command) {
+            is EditTask -> onEditTask(command.args)
+        }
+    }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ScheduledTasksPagerScreen(
+    pagerState: PagerState,
     onAddTaskClick: () -> Unit,
     pageScreenProvider: @Composable (Int) -> Unit,
-    pageCount: Int,
-    initialPage: Int,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -88,13 +105,9 @@ fun ScheduledTasksPagerScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-
-            val pagerState = rememberPagerState(initialPage = initialPage)
-
             HorizontalPager(
                 state = pagerState,
                 beyondBoundsPageCount = 2,
-                pageCount = pageCount,
                 modifier = Modifier.fillMaxSize()
             ) { page ->
                 pageScreenProvider(page)
@@ -130,8 +143,7 @@ private fun scheduledTasksListViewModelProviderFactory(
 internal fun ScheduledTasksPagerScreenPreview() {
     TodoSimplyTheme {
         ScheduledTasksPagerScreen(
-            pageCount = 1,
-            initialPage = 1,
+            pagerState = rememberPagerState { 0 },
             onAddTaskClick = {},
             pageScreenProvider = {}
         )

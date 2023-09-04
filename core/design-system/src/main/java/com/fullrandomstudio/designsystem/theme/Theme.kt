@@ -6,6 +6,8 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
 
 val LightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
@@ -35,21 +37,40 @@ val LightColorScheme = lightColorScheme(
     outline = md_theme_light_outline,
 )
 
+val LightExtendedColors = ExtendedColors(
+    separator = md_theme_light_primary
+)
+
 @Suppress("UNUSED_PARAMETER")
 @Composable
 fun TodoSimplyTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    // Color scheme
     val colorScheme = LightColorScheme
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = TodoSimplyTypography,
-        shapes = TodoSimplyShapes,
-        content = content,
-    )
+    CompositionLocalProvider(
+        LocalExtendedShapes provides TodoSimplyExtendedShapes,
+        LocalExtendedColors provides LightExtendedColors
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = TodoSimplyTypography,
+            shapes = TodoSimplyShapes,
+            content = content,
+        )
+    }
+}
+
+object TodoSimplyTheme {
+    val shapes: ExtendedShapes
+        @ReadOnlyComposable
+        @Composable
+        get() = LocalExtendedShapes.current
+    val colorScheme: ExtendedColors
+        @ReadOnlyComposable
+        @Composable
+        get() = LocalExtendedColors.current
 }
 
 @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.S)

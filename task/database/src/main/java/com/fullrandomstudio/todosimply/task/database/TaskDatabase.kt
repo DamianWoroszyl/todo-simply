@@ -9,6 +9,8 @@ import com.fullrandomstudio.todosimply.task.database.dao.TaskDao
 import com.fullrandomstudio.todosimply.task.database.entity.TaskAlarmEntity
 import com.fullrandomstudio.todosimply.task.database.entity.TaskCategoryEntity
 import com.fullrandomstudio.todosimply.task.database.entity.TaskEntity
+import com.fullrandomstudio.todosimply.task.database.time.LocalDateTimeConverter
+import com.fullrandomstudio.todosimply.task.database.time.ZoneIdConverter
 import com.fullrandomstudio.todosimply.task.database.time.ZonedDateTimeConverter
 import com.fullrandomstudio.todosimply.task.database.view.TaskFullView
 
@@ -24,7 +26,9 @@ import com.fullrandomstudio.todosimply.task.database.view.TaskFullView
     version = 1
 )
 @TypeConverters(
-    ZonedDateTimeConverter::class
+    ZonedDateTimeConverter::class,
+    LocalDateTimeConverter::class,
+    ZoneIdConverter::class
 )
 abstract class TaskDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao

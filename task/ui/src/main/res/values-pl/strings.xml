@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="task_action_delete">Usuń</string>
+    <string name="task_action_duplicate">Duplikuj</string>
+    <string name="task_action_schedule">Zaplanuje</string>
+    <string name="task_action_edit">Edytuj</string>
+
+    <string name="save_task">Zapisz</string>
+
+    <string name="edit_task_error_empty_name">Nazwa zadania nie może być pusta</string>
+</resources>

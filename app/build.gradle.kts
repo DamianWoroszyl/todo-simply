@@ -25,12 +25,18 @@ android {
                 "proguard-rules.pro"
             )
         }
+            debug {
+                isMinifyEnabled = false
+                applicationIdSuffix = ".debug"
+                versionNameSuffix = "-debug"
+            }
     }
 }
 
 dependencies {
 
     implementation(project(":task:ui"))
+    implementation(project(":task:domain"))
     implementation(project(":core:design-system"))
     implementation(project(":core:initializer"))
     implementation(project(":core:common"))

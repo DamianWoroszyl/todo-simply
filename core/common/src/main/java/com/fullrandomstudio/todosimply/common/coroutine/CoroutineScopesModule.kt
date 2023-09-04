@@ -13,7 +13,7 @@ import javax.inject.Singleton
 
 @Retention(AnnotationRetention.RUNTIME)
 @Qualifier
-annotation class ApplicationScope
+annotation class ApplicationCoroutineScope
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -21,8 +21,8 @@ object CoroutineScopesModule {
 
     @Provides
     @Singleton
-    @ApplicationScope
-    fun providesCoroutineScope(
+    @ApplicationCoroutineScope
+    fun provideApplicationCoroutineScope(
         @Dispatcher(Default) dispatcher: CoroutineDispatcher,
     ): CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
 }

@@ -16,12 +16,16 @@ android {
 
 dependencies {
     implementation(project(":core:design-system"))
+    implementation(project(":core:common"))
     implementation(project(":core:util"))
     implementation(project(":core:util-android"))
+    implementation(project(":core:ui"))
     implementation(project(":task:data"))
+    implementation(project(":task:domain"))
     implementation(project(":task:model"))
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.kotlin.immutable.collections)
 
     implementation(libs.androidx.compose.ui.ui)
     implementation(libs.androidx.compose.ui.ui.graphics)

@@ -12,19 +12,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.fullrandomstudio.designsystem.theme.TodoSimplyTheme
+import com.fullrandomstudio.task.ui.edit.TaskEditArgs
 import com.fullrandomstudio.todosimply.ui.home.bottombar.HomeBottomBar
 import com.fullrandomstudio.todosimply.ui.home.bottombar.HomeNavBarDestination
-import com.fullrandomstudio.todosimply.ui.home.navigation.HOME_SCHEDULED_TASKS_ROUTE
-import com.fullrandomstudio.todosimply.ui.home.navigation.homeScheduledTasks
-import com.fullrandomstudio.todosimply.ui.home.navigation.navigateToHomeScheduledTasks
+import com.fullrandomstudio.todosimply.ui.home.navigation.HomeNavigation
+import com.fullrandomstudio.todosimply.ui.home.navigation.HomeTabScreen
 
 @Composable
 fun HomeScreen(
+    onEditTask: (args: TaskEditArgs) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
@@ -38,21 +38,18 @@ fun HomeScreen(
             HomeBottomBar(
                 currentDestination = currentDestination,
                 onNavigateToDestination = { destination ->
-                    // TODO feature - when tapping selected destination reset
+                    // TODO feature - when tapping selected destination again reset
                     //  state to top of the list/default tab selection
                     navigateToDestination(navController, destination)
                 }
             )
         }
     ) { paddingValues ->
-
-        NavHost(
+        HomeNavigation(
             navController = navController,
-            startDestination = HOME_SCHEDULED_TASKS_ROUTE,
+            onEditTask = onEditTask,
             modifier = Modifier.padding(paddingValues)
-        ) {
-            homeScheduledTasks()
-        }
+        )
     }
 }
 
@@ -69,7 +66,8 @@ private fun navigateToDestination(
     }
 
     when (destination) {
-        HomeNavBarDestination.SCHEDULED_TASKS -> navController.navigateToHomeScheduledTasks(
+        HomeNavBarDestination.SCHEDULED_TASKS -> navController.navigate(
+            HomeTabScreen.ScheduledTasks.route,
             navOptions
         )
     }
@@ -79,6 +77,6 @@ private fun navigateToDestination(
 @Composable
 fun HomeScreenPreview() {
     TodoSimplyTheme {
-        HomeScreen()
+        HomeScreen({})
     }
 }

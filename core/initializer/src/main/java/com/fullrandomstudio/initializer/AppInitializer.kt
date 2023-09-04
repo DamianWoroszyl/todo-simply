@@ -4,10 +4,10 @@ import android.app.Application
 
 interface AppInitializer {
 
-    fun initialize(application: Application)
+    suspend fun initialize(application: Application)
 
     companion object {
-        fun runInitializers(initializers: List<AppInitializer>, application: Application) {
+        suspend fun runInitializers(initializers: List<AppInitializer>, application: Application) {
             initializers.forEach {
                 it.initialize(application)
             }
