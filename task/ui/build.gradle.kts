@@ -20,7 +20,7 @@ dependencies {
     implementation(project(":core:util"))
     implementation(project(":core:util-android"))
     implementation(project(":core:ui"))
-    implementation(project(":task:data"))
+
     implementation(project(":task:domain"))
     implementation(project(":task:model"))
 

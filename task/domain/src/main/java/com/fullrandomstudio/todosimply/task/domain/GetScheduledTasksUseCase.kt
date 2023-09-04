@@ -6,7 +6,7 @@ import com.fullrandomstudio.todosimply.task.data.repository.TaskRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetScheduledTasks @Inject constructor(
+class GetScheduledTasksUseCase @Inject constructor(
     private val taskRepository: TaskRepository
 ) {
 

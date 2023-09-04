@@ -5,8 +5,8 @@ import androidx.compose.ui.graphics.toArgb
 import com.fullrandomstudio.designsystem.theme.md_theme_light_secondary
 import com.fullrandomstudio.task.model.Task
 import com.fullrandomstudio.task.model.TaskCategory
+import com.fullrandomstudio.task.ui.list.item.TaskAction
 import com.fullrandomstudio.task.ui.list.item.TaskListItemUiState
-import com.fullrandomstudio.todosimply.task.data.config.TaskAction
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
 

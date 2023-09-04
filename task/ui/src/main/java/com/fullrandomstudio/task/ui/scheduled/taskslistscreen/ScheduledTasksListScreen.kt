@@ -1,5 +1,8 @@
-package com.fullrandomstudio.task.ui.scheduled
+@file:OptIn(ExperimentalFoundationApi::class)
 
+package com.fullrandomstudio.task.ui.scheduled.taskslistscreen
+
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,10 +13,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.fullrandomstudio.core.ui.CollectNavigation
+import com.fullrandomstudio.core.ui.effect.CollectEffectAsState
+import com.fullrandomstudio.core.ui.navigation.CollectNavigationAsFlow
 import com.fullrandomstudio.designsystem.theme.TodoSimplyTheme
 import com.fullrandomstudio.task.ui.common.EditTask
 import com.fullrandomstudio.task.ui.edit.TaskEditArgs
+import com.fullrandomstudio.task.ui.list.item.TaskAction
 import com.fullrandomstudio.task.ui.list.item.TaskCategoryMarkerListItem
 import com.fullrandomstudio.task.ui.list.item.TaskCategoryMarkerListItemUiState
 import com.fullrandomstudio.task.ui.list.item.TaskListItem
@@ -23,22 +28,31 @@ import com.fullrandomstudio.task.ui.list.item.TasksDateMarkerListItemUiState
 import com.fullrandomstudio.task.ui.list.item.TasksListItem
 import com.fullrandomstudio.task.ui.previewdata.previewDoneTaskUiState
 import com.fullrandomstudio.task.ui.previewdata.previewTodoTaskUiState
-import com.fullrandomstudio.todosimply.task.data.config.TaskAction
+import com.fullrandomstudio.task.ui.scheduled.effect.DeleteTaskEffect
 
 @Composable
 fun ScheduledTasksListScreen(
     onEditTask: (taskEditArgs: TaskEditArgs) -> Unit,
+    onShowDeleteSnackbar: (state: DeleteTaskEffect) -> Unit,
+    viewModel: ScheduledTasksListViewModel,
     modifier: Modifier = Modifier,
-    viewModel: ScheduledTasksListViewModel
 ) {
     val items by viewModel.items.collectAsStateWithLifecycle()
 
-    CollectNavigation(
-        navigator = viewModel.navigator,
+    CollectNavigationAsFlow(
+        navigationStateFlow = viewModel.navigationStateFlow,
         autoCollect = true,
     ) { _, command ->
         when (command) {
             is EditTask -> onEditTask(command.args)
+        }
+    }
+
+    CollectEffectAsState(
+        effectStateFlow = viewModel.effectStateFlow,
+    ) { _, effect ->
+        when (effect) {
+            is DeleteTaskEffect -> onShowDeleteSnackbar(effect)
         }
     }
 
@@ -66,7 +80,8 @@ fun ScheduledTasksListScreen(
         modifier = modifier.fillMaxSize(),
     ) {
         LazyColumn(
-            modifier.fillMaxSize()
+            modifier
+                .fillMaxSize()
         ) {
             items(
                 items = items,
@@ -81,6 +96,8 @@ fun ScheduledTasksListScreen(
                         onClick = onTaskClick,
                         onToggleAlarm = onToggleAlarm,
                         onTaskActionClick = onTaskActionClick,
+                        modifier = Modifier.animateItemPlacement()
+                        // todo check performance on release build on real device
                     )
                 }
             }

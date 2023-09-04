@@ -1,4 +1,4 @@
-package com.fullrandomstudio.todosimply.task.data.config
+package com.fullrandomstudio.task.ui.list.item
 
 enum class TaskAction {
     DELETE,

@@ -1,17 +1,11 @@
-package com.fullrandomstudio.core.ui
+package com.fullrandomstudio.core.ui.navigation
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.LinkedList
 import javax.inject.Inject
 
-suspend fun MutableStateFlow<NavigationState>.emit(command: NavigationCommand) {
-    emit(
-        NavigationState.Navigate(command)
-    )
-}
-
-class Navigator @Inject constructor() {
+class NavigationStateFlow @Inject constructor() {
 
     private val _navigationQueue = LinkedList<NavigationState.Navigate>()
     private val _state = MutableStateFlow<NavigationState>(NavigationState.Idle)

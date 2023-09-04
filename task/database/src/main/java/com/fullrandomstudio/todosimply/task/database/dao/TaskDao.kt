@@ -28,11 +28,22 @@ interface TaskDao {
         """
         SELECT * 
         FROM task_full_view 
-        WHERE datetime(schedule_date_time) BETWEEN datetime(:startDateTime) AND datetime(:endDateTime)
+        WHERE datetime(schedule_date_time) BETWEEN datetime(:startDateTime) AND datetime(:endDateTime) 
+        AND soft_deleted = 0
+        ORDER BY datetime(schedule_date_time)
         """
     )
     fun get(startDateTime: String, endDateTime: String): Flow<List<TaskFullView>>
 
-    @Query("""DELETE FROM task WHERE id = :id""")
-    fun delete(id: Long)
+    @Query("""UPDATE task SET soft_deleted = :value WHERE id = :taskId""")
+    fun setSoftDeleted(taskId: Long, value: Boolean): Int
+
+    @Query("""SELECT name from task WHERE id = :taskId""")
+    fun getName(taskId: Long): String
+
+    @Query("""SELECT id FROM task WHERE soft_deleted = 1""")
+    fun getSoftDeletedIds(): List<Long>
+
+    @Query("""DELETE FROM task WHERE id IN (:ids)""")
+    fun remove(ids: List<Long>)
 }

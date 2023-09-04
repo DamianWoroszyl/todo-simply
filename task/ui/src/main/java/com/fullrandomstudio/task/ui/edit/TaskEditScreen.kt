@@ -31,8 +31,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.fullrandomstudio.core.ui.CollectNavigation
-import com.fullrandomstudio.core.ui.PopBackstack
+import com.fullrandomstudio.core.ui.navigation.CollectNavigationAsFlow
+import com.fullrandomstudio.core.ui.navigation.PopBackstack
 import com.fullrandomstudio.designsystem.theme.TodoSimplyTheme
 import com.fullrandomstudio.designsystem.theme.component.TdsAppBarIconButton
 import com.fullrandomstudio.designsystem.theme.component.TdsClearTopAppBar
@@ -70,8 +70,8 @@ fun TaskEditScreen(
     val timePickerVisible by viewModel.timePickerVisible.collectAsStateWithLifecycle()
     val validationErrors by viewModel.validationErrors.collectAsStateWithLifecycle()
 
-    CollectNavigation(
-        navigator = viewModel.navigator
+    CollectNavigationAsFlow(
+        navigationStateFlow = viewModel.navigationStateFlow
     ) { _, command ->
         when (command) {
             PopBackstack -> onPop()

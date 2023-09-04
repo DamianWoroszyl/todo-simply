@@ -57,10 +57,27 @@ class OfflineTaskRepository @Inject constructor(
         taskDao.getFullView(taskId)?.toDomain()
     }
 
-    override suspend fun deleteTask(taskId: Long) = withContext(ioDispatcher) {
+    override suspend fun getTaskName(taskId: Long): String? = withContext(ioDispatcher) {
+        return@withContext taskDao.getName(taskId)
+    }
+
+    override suspend fun softDeleteTask(taskId: Long) = withContext(ioDispatcher) {
         appCoroutineScope.launch {
-            taskDao.delete(taskId)
-            taskAlarmDao.deleteForTask(taskId)
+            taskDao.setSoftDeleted(taskId, true)
         }.join()
+    }
+
+    override suspend fun undoSoftDeleteTask(taskId: Long) = withContext(ioDispatcher) {
+        appCoroutineScope.launch {
+            taskDao.setSoftDeleted(taskId, false)
+        }.join()
+    }
+
+    override suspend fun removeSoftDeletedTasks() {
+        appCoroutineScope.launch {
+            val softDeletedTaskIds = taskDao.getSoftDeletedIds()
+            taskDao.remove(softDeletedTaskIds)
+            taskAlarmDao.removeByTaskId(softDeletedTaskIds)
+        }
     }
 }

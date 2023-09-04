@@ -1,9 +1,9 @@
-package com.fullrandomstudio.task.ui.scheduled
+package com.fullrandomstudio.task.ui.scheduled.taskslistscreen
 
 import com.fullrandomstudio.task.model.Task
+import com.fullrandomstudio.task.ui.list.item.TaskAction
 import com.fullrandomstudio.task.ui.list.item.TaskListItemUiState
 import com.fullrandomstudio.task.ui.list.item.TasksListItem
-import com.fullrandomstudio.todosimply.task.data.config.TaskAction
 import javax.inject.Inject
 
 class TaskUiStateFactory @Inject constructor() {

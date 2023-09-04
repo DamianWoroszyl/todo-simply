@@ -13,12 +13,15 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:design-system"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.javax.inject)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.compose.ui.ui)
+    implementation(libs.androidx.compose.material3)
     debugImplementation(libs.androidx.compose.ui.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.ui.tooling.preview)
     testImplementation(libs.junit4)

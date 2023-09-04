@@ -43,7 +43,6 @@ import com.fullrandomstudio.designsystem.theme.TodoSimplyTheme
 import com.fullrandomstudio.task.ui.list.res.taskActionResource
 import com.fullrandomstudio.task.ui.previewdata.previewDoneTaskUiState
 import com.fullrandomstudio.task.ui.previewdata.previewTodoTaskUiState
-import com.fullrandomstudio.todosimply.task.data.config.TaskAction
 import com.fullrandomstudio.todosimply.task.ui.R
 import com.fullrandomstudio.todosimply.util.formatTimeLocalized
 

@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fullrandomstudio.core.ui.Navigator
-import com.fullrandomstudio.core.ui.PopBackstack
+import com.fullrandomstudio.core.ui.navigation.NavigationStateFlow
+import com.fullrandomstudio.core.ui.navigation.PopBackstack
 import com.fullrandomstudio.task.model.Task
 import com.fullrandomstudio.task.model.TaskAlarm
 import com.fullrandomstudio.task.model.TaskCategory
@@ -33,7 +33,7 @@ class TaskEditViewModel @Inject constructor(
     private val prepareTaskToEditUseCase: PrepareTaskToEditUseCase,
     private val saveTaskUseCase: SaveTaskUseCase,
     private val getAllCategoriesUseCase: GetAllCategoriesUseCase,
-    val navigator: Navigator,
+    val navigationStateFlow: NavigationStateFlow,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -120,7 +120,7 @@ class TaskEditViewModel @Inject constructor(
 
         viewModelScope.launch {
             saveTaskUseCase(task)
-            navigator.navigate(PopBackstack)
+            navigationStateFlow.navigate(PopBackstack)
         }
     }
 

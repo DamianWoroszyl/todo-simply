@@ -14,4 +14,7 @@ interface TaskAlarmDao {
 
     @Query("""DELETE FROM task_alarm WHERE task_id = :taskId""")
     fun deleteForTask(taskId: Long)
+
+    @Query("""DELETE FROM task_alarm WHERE task_id IN (:taskIds)""")
+    fun removeByTaskId(taskIds: List<Long>)
 }

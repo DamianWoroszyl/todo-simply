@@ -14,4 +14,8 @@ internal interface InitModule {
     @Binds
     @IntoSet
     fun bindTaskCategoryInitializer(taskCategoryInitializer: TaskCategoryInitializer): AppInitializer
+
+    @Binds
+    @IntoSet
+    fun bindSoftDeletedTaskHandler(softDeletedTaskHandler: SoftDeletedTaskHandler): AppInitializer
 }
