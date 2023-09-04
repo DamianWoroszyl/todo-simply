@@ -50,7 +50,7 @@ class Navigator @Inject constructor() {
         val currentState = _state.value
         check(
             currentState is NavigationState.Navigate &&
-                    currentState.id != (navigatedState as NavigationState.Navigate).id
+                    currentState.id == (navigatedState as NavigationState.Navigate).id
         ) { "A navigation happened, that shouldn't be a current navigation state" }
 
         if (_navigationQueue.isEmpty()) {

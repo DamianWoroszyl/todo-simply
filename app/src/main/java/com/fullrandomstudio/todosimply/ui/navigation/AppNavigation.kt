@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -16,6 +17,7 @@ import com.fullrandomstudio.task.ui.edit.TaskEditArgs.Companion.argTaskId
 import com.fullrandomstudio.task.ui.edit.TaskEditArgs.Companion.selectedDateFormatter
 import com.fullrandomstudio.task.ui.edit.TaskEditScreen
 import com.fullrandomstudio.task.ui.edit.TaskType
+import com.fullrandomstudio.todosimply.task.domain.TaskEditType
 import com.fullrandomstudio.todosimply.ui.home.HomeScreen
 
 internal sealed class Screen {
@@ -46,8 +48,8 @@ internal sealed class Screen {
             } ?: ""
 
             return "$routeTaskEditBase/" +
-                    "${type.name.lowercase()}/" +
-                    "${args.taskEditType.name.lowercase()}?" +
+                    "${type.name}/" +
+                    "${args.taskEditType.name}?" +
                     "$argTaskId=${args.taskId}" +
                     selectedDateArg
         }
@@ -89,10 +91,15 @@ fun NavGraphBuilder.addTaskEdit(
     composable(
         route = Screen.TaskEdit.route,
         arguments = listOf(
-            navArgument(TaskEditArgs.argTaskType) {},
-            navArgument(TaskEditArgs.argTaskEditType) {},
-            navArgument(TaskEditArgs.argTaskId) { nullable = true },
-            navArgument(TaskEditArgs.argSelectedDate) { nullable = true }
+            navArgument(TaskEditArgs.argTaskType) {
+                type = NavType.EnumType(TaskType::class.java)
+            },
+            navArgument(TaskEditArgs.argTaskEditType) {
+                type = NavType.EnumType(TaskEditType::class.java)
+            },
+            navArgument(TaskEditArgs.argTaskId) {
+                type = NavType.LongType
+            },
         )
     ) {
         TaskEditScreen(

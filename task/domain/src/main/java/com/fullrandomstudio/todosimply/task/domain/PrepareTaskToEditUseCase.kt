@@ -21,12 +21,12 @@ class PrepareTaskToEditUseCase @Inject constructor(
 
     suspend operator fun invoke(
         taskEditType: TaskEditType,
-        taskId: Long?,
+        taskId: Long,
         scheduled: Boolean,
         selectedDate: LocalDate?
     ): Result<Task> {
 
-        val task: Task? = taskRepository.getTask(taskId ?: -1L)
+        val task: Task? = taskRepository.getTask(taskId)
         if (task == null && taskEditType != TaskEditType.CREATE) {
             return Result.failure<Task>(TaskNotFound())
         }

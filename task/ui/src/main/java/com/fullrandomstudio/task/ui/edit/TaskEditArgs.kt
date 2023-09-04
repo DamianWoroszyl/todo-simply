@@ -1,36 +1,23 @@
-@file:Suppress("ConstPropertyName", "TopLevelPropertyNaming")
-
 package com.fullrandomstudio.task.ui.edit
 
 import androidx.lifecycle.SavedStateHandle
 import com.fullrandomstudio.todosimply.task.domain.TaskEditType
-import java.lang.Long.parseLong
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class TaskEditArgs(
     val taskEditType: TaskEditType,
     val scheduled: Boolean,
-    val taskId: Long? = null,
+    val taskId: Long = -1L,
     val selectedDate: LocalDate? = null
 ) {
     constructor(savedStateHandle: SavedStateHandle) : this(
-        taskEditType = TaskEditType.valueOf(
-            requireNotNull(
-                savedStateHandle.get<String>(argTaskEditType)
-            ).uppercase()
-        ),
-        scheduled = when (
-            TaskType.valueOf(
-                requireNotNull(
-                    savedStateHandle.get<String>(argTaskType)
-                ).uppercase()
-            )
-        ) {
+        taskEditType = requireNotNull(savedStateHandle.get<TaskEditType>(argTaskEditType)),
+        scheduled = when (requireNotNull(savedStateHandle.get<TaskType>(argTaskType))) {
             TaskType.SCHEDULED -> true
             TaskType.GENERAL -> false
         },
-        taskId = savedStateHandle.get<String>(argTaskId)?.let { parseLong(it) },
+        taskId = savedStateHandle.get<Long>(argTaskId) ?: -1L,
         selectedDate = savedStateHandle.get<String>(argSelectedDate)?.let {
             LocalDate.parse(it, selectedDateFormatter)
         }
