@@ -40,12 +40,8 @@ class OfflineTaskRepository @Inject constructor(
         val taskEntity = task.toEntity()
         val taskId: Long = appCoroutineScope.async {
             val taskId = taskDao.insert(taskEntity)
-            val taskAlarm = task.toAlarmEntity(taskId)
-            if (taskAlarm != null) {
-                taskAlarmDao.insert(taskAlarm)
-            } else {
-                taskAlarmDao.deleteForTask(taskId)
-            }
+            taskAlarmDao.deleteForTask(taskId)
+            task.toAlarmEntity(taskId)?.let { taskAlarmDao.insert(it) }
             taskId
         }.await()
 

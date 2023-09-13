@@ -97,7 +97,8 @@ fun ScheduledTasksListScreen(
                         onToggleAlarm = onToggleAlarm,
                         onTaskActionClick = onTaskActionClick,
                         modifier = Modifier.animateItemPlacement()
-                        // todo check performance on release build on real device
+                        // todo check performance on release build on real device,
+                        // with and without animateItemPlacement()
                     )
                 }
             }
