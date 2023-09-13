@@ -14,6 +14,7 @@ import com.fullrandomstudio.task.ui.list.item.TasksListItem
 import com.fullrandomstudio.task.ui.scheduled.effect.DeleteTaskEffect
 import com.fullrandomstudio.todosimply.task.domain.DeleteTaskUseCase
 import com.fullrandomstudio.todosimply.task.domain.GetScheduledTasksUseCase
+import com.fullrandomstudio.todosimply.task.domain.SetTaskDoneUseCase
 import com.fullrandomstudio.todosimply.task.domain.TaskEditType
 import com.fullrandomstudio.todosimply.utilandroid.stateInViewModel
 import dagger.assisted.Assisted
@@ -30,11 +31,13 @@ class ScheduledTasksListViewModel @AssistedInject constructor(
     private val taskUiStateFactory: TaskUiStateFactory,
     private val deleteTaskUseCase: DeleteTaskUseCase,
     private val getScheduledTasks: GetScheduledTasksUseCase,
+    private val setTaskDoneUseCase: SetTaskDoneUseCase,
     val navigationStateFlow: NavigationStateFlow,
     val effectStateFlow: EffectStateFlow,
     @Assisted private val dateRange: DateRange
 ) : ViewModel() {
 
+    //todo dw finished here - think about moving expanded to composition, we dont want it to be remembered probably?
     private val _expandedTask: MutableStateFlow<Long> = MutableStateFlow(-1L)
 
     val items: StateFlow<List<TasksListItem>> = getScheduledTasks(dateRange)
@@ -46,11 +49,24 @@ class ScheduledTasksListViewModel @AssistedInject constructor(
         _expandedTask.update { if (it == taskId) -1 else taskId }
     }
 
+    fun onTaskDoneClick(taskId: Long, isFinished: Boolean) {
+        viewModelScope.launch {
+            setTaskDoneUseCase(taskId, !isFinished)
+        }
+    }
+
     fun onToggleAlarm(taskId: Long) {
-        items.value
-            .find { it is TaskListItemUiState && it.task.id == taskId }
-//            .let { taskRepository.set }
-        TODO("Not yet implemented")
+        requireNotNull(
+            items.value.find { it is TaskListItemUiState && it.task.id == taskId }
+        ).let {
+            val task = it as TaskListItemUiState
+            if (task.task.isFinished) {
+                // ignore
+            } else {
+            // taskRepository.set
+                TODO("Not yet implemented")
+            }
+        }
     }
 
     fun onTaskActionClick(taskId: Long, taskAction: TaskAction) {

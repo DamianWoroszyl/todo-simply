@@ -2,12 +2,19 @@ package com.fullrandomstudio.task.ui.list.item
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -17,7 +24,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
@@ -50,6 +56,7 @@ import com.fullrandomstudio.todosimply.util.formatTimeLocalized
 internal fun TaskListItem(
     state: TaskListItemUiState,
     onClick: (taskId: Long) -> Unit,
+    onTaskDoneClick: (taskId: Long, isFinished: Boolean) -> Unit,
     onToggleAlarm: (taskId: Long) -> Unit,
     onTaskActionClick: (taskId: Long, taskAction: TaskAction) -> Unit,
     modifier: Modifier = Modifier
@@ -58,7 +65,8 @@ internal fun TaskListItem(
         color = MaterialTheme.colorScheme.background,
         modifier = modifier
             .clickable { onClick(state.task.id) }
-            .padding(4.dp),
+            .padding(4.dp)
+            .animateContentSize(),
         shape = MaterialTheme.shapes.medium,
     ) {
 
@@ -67,7 +75,10 @@ internal fun TaskListItem(
                 .fillMaxWidth()
                 .padding(start = 4.dp)
         ) {
-            val contentAlpha = if (state.task.isFinished) 0.5f else 1f
+            val contentAlpha by animateFloatAsState(
+                targetValue = if (state.task.isFinished) 0.5f else 1f, label = "itemAlpha"
+            )
+
             val taskStatusImage =
                 if (state.task.isFinished) R.drawable.ic_task_done else R.drawable.ic_task_not_done
             ConstraintLayout(
@@ -78,17 +89,21 @@ internal fun TaskListItem(
             ) {
                 val (doneCheckbox, title, time, alarm) = createRefs()
 
-                Image(
-                    imageVector = ImageVector.vectorResource(taskStatusImage),
-                    colorFilter = ColorFilter.tint(Color(state.task.category.color)),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .size(32.dp)
-                        .constrainAs(doneCheckbox) {
-                            start.linkTo(parent.start)
-                            top.linkTo(parent.top)
-                        }
-                )
+                IconButton(
+                    onClick = { onTaskDoneClick(state.task.id, state.task.isFinished) },
+                    modifier = Modifier.constrainAs(doneCheckbox) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                    }
+                ) {
+                    Image(
+                        imageVector = ImageVector.vectorResource(taskStatusImage),
+                        colorFilter = ColorFilter.tint(Color(state.task.category.color)),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .size(32.dp)
+                    )
+                }
 
                 val leftBarrier = createEndBarrier(doneCheckbox, margin = 4.dp)
 
@@ -151,19 +166,20 @@ internal fun TaskListItem(
                 )
             }
 
-            val actionsVisible = state.expanded
-            AnimatedVisibility(
-                visible = actionsVisible,
+            Row(
                 modifier = Modifier
-                    .wrapContentSize()
+                    .padding(top = 16.dp)
+                    .alpha(2f)
                     .align(Alignment.End)
             ) {
-                Row(
-                    modifier = Modifier
-                        .padding(top = 16.dp)
-                        .alpha(2f)
-                ) {
-                    for (taskAction in state.taskActions) {
+                for (taskAction in TaskAction.values()) {
+                    val visible = state.taskActions.contains(taskAction) && state.expanded
+                    val horizontally = state.task.isFinished
+                    AnimatedVisibility(
+                        visible = visible,
+                        enter = fadeIn() + expandHorizontally(),
+                        exit = fadeOut() + if(horizontally) shrinkHorizontally() else shrinkVertically(),
+                    ) {
                         TaskActionButton(
                             taskAction = taskAction,
                             onClick = { onTaskActionClick(state.task.id, taskAction) }
@@ -277,7 +293,11 @@ private fun TaskListItemPreviewTodo() {
     val state = previewTodoTaskUiState()
     TodoSimplyTheme {
         TaskListItem(
-            state = state, onClick = {}, onToggleAlarm = {}, onTaskActionClick = { _, _ -> }
+            state = state,
+            onClick = {},
+            onTaskDoneClick = { _, _ -> },
+            onToggleAlarm = {},
+            onTaskActionClick = { _, _ -> }
         )
     }
 }
@@ -289,7 +309,10 @@ private fun TaskListItemPreviewDone() {
     TodoSimplyTheme {
         TaskListItem(
             state = state,
-            onClick = {}, onToggleAlarm = {}, onTaskActionClick = { _, _ -> }
+            onClick = {},
+            onToggleAlarm = {},
+            onTaskDoneClick = { _, _ -> },
+            onTaskActionClick = { _, _ -> }
         )
     }
 }

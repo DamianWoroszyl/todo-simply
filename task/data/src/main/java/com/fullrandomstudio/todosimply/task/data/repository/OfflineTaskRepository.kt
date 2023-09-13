@@ -3,6 +3,7 @@ package com.fullrandomstudio.todosimply.task.data.repository
 import com.fullrandomstudio.task.model.DateRange
 import com.fullrandomstudio.task.model.ISO_ZONED_DATE_TIME_FORMATTER
 import com.fullrandomstudio.task.model.Task
+import com.fullrandomstudio.task.model.toUtcSameInstant
 import com.fullrandomstudio.todosimply.common.coroutine.ApplicationCoroutineScope
 import com.fullrandomstudio.todosimply.common.coroutine.Dispatcher
 import com.fullrandomstudio.todosimply.common.coroutine.TodoSimplyDispatchers.IO
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import javax.inject.Inject
 
 class OfflineTaskRepository @Inject constructor(
@@ -74,6 +76,18 @@ class OfflineTaskRepository @Inject constructor(
             val softDeletedTaskIds = taskDao.getSoftDeletedIds()
             taskDao.remove(softDeletedTaskIds)
             taskAlarmDao.removeByTaskId(softDeletedTaskIds)
-        }
+        }.join()
+    }
+
+    override suspend fun setTaskDone(taskId: Long, done: Boolean) {
+        appCoroutineScope.launch {
+            val finishDate = if(done) {
+                ZonedDateTime.now().toUtcSameInstant()
+            } else {
+                null
+            }?.toLocalDateTime()
+
+            taskDao.setTaskFinishDateTime(taskId, finishDate)
+        }.join()
     }
 }

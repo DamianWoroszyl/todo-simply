@@ -13,6 +13,7 @@ import com.fullrandomstudio.task.model.TaskCategory
 import com.fullrandomstudio.todosimply.task.domain.GetAllCategoriesUseCase
 import com.fullrandomstudio.todosimply.task.domain.PrepareTaskToEditUseCase
 import com.fullrandomstudio.todosimply.task.domain.SaveTaskUseCase
+import com.fullrandomstudio.todosimply.task.domain.SetTaskDoneUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableSet
@@ -39,6 +40,7 @@ class TaskEditViewModel @Inject constructor(
     private val prepareTaskToEditUseCase: PrepareTaskToEditUseCase,
     private val saveTaskUseCase: SaveTaskUseCase,
     private val getAllCategoriesUseCase: GetAllCategoriesUseCase,
+    private val setTaskDoneUseCase: SetTaskDoneUseCase,
     private val savedStateHandle: SavedStateHandle,
     val navigationStateFlow: NavigationStateFlow
 ) : ViewModel() {
@@ -177,7 +179,11 @@ class TaskEditViewModel @Inject constructor(
     }
 
     fun onDoneClick() {
-        TODO("Not yet implemented")
+        val task = _task.value
+        viewModelScope.launch {
+            setTaskDoneUseCase(task.id, !task.isFinished)
+            navigationStateFlow.navigate(PopBackstack)
+        }
     }
 
     fun onAlarmChange() {

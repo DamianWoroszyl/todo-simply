@@ -7,6 +7,7 @@ import androidx.room.Query
 import com.fullrandomstudio.todosimply.task.database.entity.TaskEntity
 import com.fullrandomstudio.todosimply.task.database.view.TaskFullView
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDateTime
 
 @Dao
 interface TaskDao {
@@ -46,4 +47,7 @@ interface TaskDao {
 
     @Query("""DELETE FROM task WHERE id IN (:ids)""")
     fun remove(ids: List<Long>)
+
+    @Query("""UPDATE task SET finish_date_time_utc = :finishDateTimeUtc WHERE id = :taskId""")
+    fun setTaskFinishDateTime(taskId: Long, finishDateTimeUtc: LocalDateTime?)
 }

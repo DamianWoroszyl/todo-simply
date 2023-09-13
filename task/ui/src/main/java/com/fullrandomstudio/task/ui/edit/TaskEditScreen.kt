@@ -78,6 +78,7 @@ fun TaskEditScreen(
     }
 
     TaskEditScreen(
+        doneVisible = task.exists(),
         onSaveClick = { viewModel.onSaveClick() },
         onBackClick = onPop,
         onDoneClick = { viewModel.onDoneClick() },
@@ -126,6 +127,7 @@ fun TaskEditScreen(
 
 @Composable
 fun TaskEditScreen(
+    doneVisible: Boolean,
     onSaveClick: () -> Unit,
     onBackClick: () -> Unit,
     onDoneClick: () -> Unit,
@@ -146,6 +148,7 @@ fun TaskEditScreen(
         },
         topBar = {
             ActionsContainer(
+                doneVisible = doneVisible,
                 onBackClick = onBackClick,
                 onDoneClick = onDoneClick,
                 elevated = scrollState.value > 0
@@ -221,6 +224,7 @@ fun EditScreenTimePicker(
 
 @Composable
 private fun ActionsContainer(
+    doneVisible: Boolean,
     onBackClick: () -> Unit,
     onDoneClick: () -> Unit,
     elevated: Boolean
@@ -233,10 +237,12 @@ private fun ActionsContainer(
             )
         },
         actions = {
-            TdsAppBarIconButton(
-                onClick = onDoneClick,
-                iconRes = CommonR.drawable.ic_done
-            )
+            if (doneVisible) {
+                TdsAppBarIconButton(
+                    onClick = onDoneClick,
+                    iconRes = CommonR.drawable.ic_done
+                )
+            }
         },
         elevated = elevated
     )
@@ -358,6 +364,7 @@ private fun TaskEditScreenPreview() {
 
     TodoSimplyTheme {
         TaskEditScreen(
+            doneVisible = true,
             onSaveClick = { },
             onBackClick = { },
             onDoneClick = { },

@@ -13,4 +13,5 @@ interface TaskRepository {
     suspend fun getTaskName(taskId: Long): String?
     suspend fun undoSoftDeleteTask(taskId: Long)
     suspend fun removeSoftDeletedTasks()
+    suspend fun setTaskDone(taskId: Long, done: Boolean)
 }

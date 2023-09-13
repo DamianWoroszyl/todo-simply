@@ -2,7 +2,7 @@ package com.fullrandomstudio.todosimply.task.domain
 
 import com.fullrandomstudio.task.model.Task
 import com.fullrandomstudio.task.model.TaskAlarm
-import com.fullrandomstudio.task.model.UTC_ZONE_ID
+import com.fullrandomstudio.task.model.toUtcSameInstant
 import com.fullrandomstudio.todosimply.task.data.repository.TaskCategoryRepository
 import com.fullrandomstudio.todosimply.task.data.repository.TaskRepository
 import com.fullrandomstudio.todosimply.task.domain.exception.TaskNotFound
@@ -56,7 +56,7 @@ class PrepareTaskToEditUseCase @Inject constructor(
             description = "",
             category = taskCategoryRepository.getDefaultCategory(),
             scheduled = scheduled,
-            creationDateTimeUtc = currentLocalDateTimeUtc(),
+            creationDateTimeUtc = creationDateUtc(),
             scheduleDateTime = scheduleTime,
             finishDateTimeUtc = null,
             softDeleted = false,
@@ -77,14 +77,14 @@ class PrepareTaskToEditUseCase @Inject constructor(
     private fun createTaskDuplicate(originalTask: Task): Task {
         return originalTask.copy(
             softDeleted = false,
-            creationDateTimeUtc = currentLocalDateTimeUtc(),
+            creationDateTimeUtc = creationDateUtc(),
             finishDateTimeUtc = null,
             id = 0
         )
     }
 
-    private fun currentLocalDateTimeUtc(): LocalDateTime =
-        ZonedDateTime.now(UTC_ZONE_ID).toLocalDateTime()
+    private fun creationDateUtc(): LocalDateTime =
+        ZonedDateTime.now().toUtcSameInstant().toLocalDateTime()
 
     private fun createNewTaskDateTime(selectedDate: LocalDate? = null): ZonedDateTime {
         val date = selectedDate ?: LocalDate.now()

@@ -15,6 +15,10 @@ data class Task(
     val taskAlarm: TaskAlarm?,
     val softDeleted: Boolean,
 ) {
+    fun exists(): Boolean {
+        return id > 0L
+    }
+
     val hasAlarm: Boolean = taskAlarm != null
     val isFinished: Boolean = finishDateTimeUtc != null
     val isScheduled: Boolean = scheduleDateTime != null

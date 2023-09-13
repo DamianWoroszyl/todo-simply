@@ -59,6 +59,7 @@ fun ScheduledTasksListScreen(
     ScheduledTasksListScreen(
         items = items,
         onTaskClick = { taskId -> viewModel.onTaskClick(taskId) },
+        onTaskDoneClick = { taskId, isFinished -> viewModel.onTaskDoneClick(taskId, isFinished) },
         onToggleAlarm = { taskId -> viewModel.onToggleAlarm(taskId) },
         onTaskActionClick = { taskId, taskAction ->
             viewModel.onTaskActionClick(taskId, taskAction)
@@ -70,6 +71,7 @@ fun ScheduledTasksListScreen(
 @Composable
 fun ScheduledTasksListScreen(
     items: List<TasksListItem>,
+    onTaskDoneClick: (taskId: Long, isFinished: Boolean) -> Unit,
     onTaskClick: (taskId: Long) -> Unit,
     onToggleAlarm: (taskId: Long) -> Unit,
     onTaskActionClick: (taskId: Long, taskAction: TaskAction) -> Unit,
@@ -94,6 +96,7 @@ fun ScheduledTasksListScreen(
                     is TaskListItemUiState -> TaskListItem(
                         state = it,
                         onClick = onTaskClick,
+                        onTaskDoneClick = onTaskDoneClick,
                         onToggleAlarm = onToggleAlarm,
                         onTaskActionClick = onTaskActionClick,
                         modifier = Modifier.animateItemPlacement()
@@ -131,6 +134,7 @@ internal fun TasksListScreenPreview() {
                 previewTodoTaskUiState(),
                 previewDoneTaskUiState()
             ),
+            onTaskDoneClick = { _, _ -> },
             onTaskClick = { _ -> },
             onToggleAlarm = { _ -> },
             onTaskActionClick = { _, _ -> },
