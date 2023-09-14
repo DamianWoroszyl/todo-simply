@@ -5,11 +5,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fullrandomstudio.core.ui.navigation.NavigationStateFlow
-import com.fullrandomstudio.core.ui.navigation.PopBackstack
+import com.fullrandomstudio.core.ui.effect.EffectStateFlow
+import com.fullrandomstudio.core.ui.effect.MutableEffectStateFlow
 import com.fullrandomstudio.task.model.Task
 import com.fullrandomstudio.task.model.TaskAlarm
 import com.fullrandomstudio.task.model.TaskCategory
+import com.fullrandomstudio.task.ui.edit.effect.PopTaskEdit
+import com.fullrandomstudio.task.ui.edit.effect.TaskEditScreenNavigation
+import com.fullrandomstudio.task.ui.edit.effect.TaskPrepareErrorPop
 import com.fullrandomstudio.todosimply.task.domain.GetAllCategoriesUseCase
 import com.fullrandomstudio.todosimply.task.domain.PrepareTaskToEditUseCase
 import com.fullrandomstudio.todosimply.task.domain.SaveTaskUseCase
@@ -42,7 +45,6 @@ class TaskEditViewModel @Inject constructor(
     private val getAllCategoriesUseCase: GetAllCategoriesUseCase,
     private val setTaskDoneUseCase: SetTaskDoneUseCase,
     private val savedStateHandle: SavedStateHandle,
-    val navigationStateFlow: NavigationStateFlow
 ) : ViewModel() {
 
     private val args: TaskEditArgs = TaskEditArgs(savedStateHandle)
@@ -63,6 +65,7 @@ class TaskEditViewModel @Inject constructor(
         MutableStateFlow(
             emptyList<TaskEditValidationError>().toImmutableSet()
         )
+    private val _navigationStateFlow = MutableEffectStateFlow<TaskEditScreenNavigation>()
 
     val task: StateFlow<Task> = _task
     val categoryPickerVisible: StateFlow<Boolean> = _categoryDialogVisible
@@ -70,6 +73,7 @@ class TaskEditViewModel @Inject constructor(
     val datePickerVisible: StateFlow<Boolean> = _datePickerDialogVisible
     val timePickerVisible: StateFlow<Boolean> = _timePickerDialogVisible
     val validationErrors: StateFlow<ImmutableSet<TaskEditValidationError>> = _validationErrors
+    val navigationStateFlow: EffectStateFlow<TaskEditScreenNavigation> = _navigationStateFlow
 
     init {
         setupTask()
@@ -92,7 +96,7 @@ class TaskEditViewModel @Inject constructor(
                     updateTaskNameAndDescription(it)
                 },
                 {
-                    // todo show error and go back in later task
+                    _navigationStateFlow.emit(TaskPrepareErrorPop)
                 }
             )
         }
@@ -166,7 +170,7 @@ class TaskEditViewModel @Inject constructor(
 
         viewModelScope.launch {
             saveTaskUseCase(task)
-            navigationStateFlow.navigate(PopBackstack)
+            _navigationStateFlow.emit(PopTaskEdit)
         }
     }
 
@@ -182,7 +186,7 @@ class TaskEditViewModel @Inject constructor(
         val task = _task.value
         viewModelScope.launch {
             setTaskDoneUseCase(task.id, !task.isFinished)
-            navigationStateFlow.navigate(PopBackstack)
+            _navigationStateFlow.emit(PopTaskEdit)
         }
     }
 

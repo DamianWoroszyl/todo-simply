@@ -3,11 +3,13 @@ package com.fullrandomstudio.task.ui.scheduled
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fullrandomstudio.core.ui.effect.EffectStateFlow
+import com.fullrandomstudio.core.ui.effect.MutableEffectStateFlow
 import com.fullrandomstudio.core.ui.navigation.NavigationStateFlow
 import com.fullrandomstudio.task.model.DateRange
 import com.fullrandomstudio.task.ui.common.EditTask
 import com.fullrandomstudio.task.ui.edit.TaskEditArgs
 import com.fullrandomstudio.task.ui.scheduled.effect.DeleteTaskEffect
+import com.fullrandomstudio.task.ui.scheduled.effect.ScheduledTasksPagerScreenEffect
 import com.fullrandomstudio.todosimply.task.domain.TaskEditType
 import com.fullrandomstudio.todosimply.task.domain.UndoTaskDeleteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,13 +21,15 @@ import javax.inject.Inject
 class ScheduledTasksPagerViewModel @Inject constructor(
     private val undoTaskDeleteUseCase: UndoTaskDeleteUseCase,
     val navigationStateFlow: NavigationStateFlow,
-    val effectStateFlow: EffectStateFlow,
 ) : ViewModel() {
 
     val pageCount = Int.MAX_VALUE
     val initPage = Int.MAX_VALUE / 2
     private val initPageStartDate: LocalDate = LocalDate.now()
     private val timeRangeType = TimeRangeType.DAY // TODO later get from settings
+
+    private val _effectStateFlow = MutableEffectStateFlow<ScheduledTasksPagerScreenEffect>()
+    val effectStateFlow: EffectStateFlow<ScheduledTasksPagerScreenEffect> = _effectStateFlow
 
     fun onAddTaskClick(currentPage: Int) {
         navigationStateFlow.navigate(
@@ -60,7 +64,7 @@ class ScheduledTasksPagerViewModel @Inject constructor(
         return DateRange(startDate, endDate)
     }
 
-    fun onShowDeleteSnackbar(state: DeleteTaskEffect) {
-        effectStateFlow.emit(state)
+    fun onShowDeleteSnackbar(taskId: Long, taskName: String) {
+        _effectStateFlow.emit(DeleteTaskEffect(taskId, taskName))
     }
 }

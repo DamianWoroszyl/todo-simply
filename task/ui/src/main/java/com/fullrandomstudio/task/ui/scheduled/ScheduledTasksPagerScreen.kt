@@ -50,6 +50,7 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.components.ActivityComponent
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -74,7 +75,9 @@ fun ScheduledTasksPagerScreen(
             val dateRange: DateRange = viewModel.dateRangeForPage(page)
             ScheduledTasksListScreen(
                 onEditTask = onEditTask,
-                onShowDeleteSnackbar = { state -> viewModel.onShowDeleteSnackbar(state) },
+                onShowDeleteSnackbar = { taskId, taskName ->
+                    viewModel.onShowDeleteSnackbar(taskId, taskName)
+                },
                 viewModel = viewModel(
                     key = dateRange.toString(),
                     factory = scheduledTasksListViewModelProviderFactory(dateRange)
@@ -97,15 +100,29 @@ fun ScheduledTasksPagerScreen(
         effectStateFlow = viewModel.effectStateFlow,
     ) { _, effect ->
         when (effect) {
-            is DeleteTaskEffect -> {
-                val snackbarState = createSnackBarDeleteTaskMessage(context, effect.taskName)
-                coroutineScope.launch {
-                    val result = snackbarHostState.showSnackbar(snackbarState)
-                    if (result == SnackbarResult.ActionPerformed) {
-                        viewModel.onTaskDeleteUndoClick(effect.taskId)
-                    }
-                }
-            }
+            is DeleteTaskEffect ->
+                showDeleteSnackbar(
+                    context = context,
+                    effect = effect,
+                    coroutineScope = coroutineScope,
+                    snackbarHostState = snackbarHostState
+                ) { viewModel.onTaskDeleteUndoClick(it) }
+        }
+    }
+}
+
+private fun showDeleteSnackbar(
+    context: Context,
+    effect: DeleteTaskEffect,
+    coroutineScope: CoroutineScope,
+    snackbarHostState: SnackbarHostState,
+    onUndoClick: (taskId: Long) -> Unit
+) {
+    val snackbarState = createSnackBarDeleteTaskMessage(context, effect.taskName)
+    coroutineScope.launch {
+        val result = snackbarHostState.showSnackbar(snackbarState)
+        if (result == SnackbarResult.ActionPerformed) {
+            onUndoClick(effect.taskId)
         }
     }
 }

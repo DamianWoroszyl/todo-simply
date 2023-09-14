@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.StateFlow
 import java.util.LinkedList
 import javax.inject.Inject
 
+@Deprecated("Just use EffectStateFlow")
 class NavigationStateFlow @Inject constructor() {
 
     private val _navigationQueue = LinkedList<NavigationState.Navigate>()

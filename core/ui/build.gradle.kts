@@ -19,6 +19,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.javax.inject)
+    implementation(libs.timber)
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.compose.ui.ui)
     implementation(libs.androidx.compose.material3)

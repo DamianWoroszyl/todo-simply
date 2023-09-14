@@ -3,6 +3,8 @@
     <string name="ok">Ok</string>
     <string name="cancel">Anuluj</string>
 
+    <string name="something_went_wrong">Coś poszło nie tak</string>
+
     <string name="label_scheduled_tasks">Zaplanowane zadania</string>
     <string name="label_general_tasks">Ogólne zadania</string>
     <string name="label_shopping_lists">Listy zakupowe</string>

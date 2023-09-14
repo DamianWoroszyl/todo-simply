@@ -30,6 +30,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.ui)
     implementation(libs.androidx.compose.ui.ui.graphics)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.iconsExtended)
     debugImplementation(libs.androidx.compose.ui.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.ui.tooling.preview)
 
@@ -37,6 +38,8 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.lifecycle.viewModelCompose)
+
+    implementation(libs.timber)
 
     testImplementation(libs.junit4)
     androidTestImplementation(libs.androidx.test.ext)

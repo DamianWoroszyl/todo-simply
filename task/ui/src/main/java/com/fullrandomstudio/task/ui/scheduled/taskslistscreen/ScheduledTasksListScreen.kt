@@ -13,7 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.fullrandomstudio.core.ui.effect.CollectEffectAsState
+import com.fullrandomstudio.core.ui.effect.CollectEffectAsFlow
 import com.fullrandomstudio.core.ui.navigation.CollectNavigationAsFlow
 import com.fullrandomstudio.designsystem.theme.TodoSimplyTheme
 import com.fullrandomstudio.task.ui.common.EditTask
@@ -28,33 +28,16 @@ import com.fullrandomstudio.task.ui.list.item.TasksDateMarkerListItemUiState
 import com.fullrandomstudio.task.ui.list.item.TasksListItem
 import com.fullrandomstudio.task.ui.previewdata.previewDoneTaskUiState
 import com.fullrandomstudio.task.ui.previewdata.previewTodoTaskUiState
-import com.fullrandomstudio.task.ui.scheduled.effect.DeleteTaskEffect
+import com.fullrandomstudio.task.ui.scheduled.taskslistscreen.effect.DeleteTaskEffect
 
 @Composable
 fun ScheduledTasksListScreen(
     onEditTask: (taskEditArgs: TaskEditArgs) -> Unit,
-    onShowDeleteSnackbar: (state: DeleteTaskEffect) -> Unit,
+    onShowDeleteSnackbar: (taskId: Long, taskName: String) -> Unit,
     viewModel: ScheduledTasksListViewModel,
     modifier: Modifier = Modifier,
 ) {
     val items by viewModel.items.collectAsStateWithLifecycle()
-
-    CollectNavigationAsFlow(
-        navigationStateFlow = viewModel.navigationStateFlow,
-        autoCollect = true,
-    ) { _, command ->
-        when (command) {
-            is EditTask -> onEditTask(command.args)
-        }
-    }
-
-    CollectEffectAsState(
-        effectStateFlow = viewModel.effectStateFlow,
-    ) { _, effect ->
-        when (effect) {
-            is DeleteTaskEffect -> onShowDeleteSnackbar(effect)
-        }
-    }
 
     ScheduledTasksListScreen(
         items = items,
@@ -66,6 +49,22 @@ fun ScheduledTasksListScreen(
         },
         modifier = modifier
     )
+
+    CollectNavigationAsFlow(
+        navigationStateFlow = viewModel.navigationStateFlow,
+    ) { _, command ->
+        when (command) {
+            is EditTask -> onEditTask(command.args)
+        }
+    }
+
+    CollectEffectAsFlow(
+        effectStateFlow = viewModel.effectStateFlow,
+    ) { _, effect ->
+        when (effect) {
+            is DeleteTaskEffect -> onShowDeleteSnackbar(effect.taskId, effect.taskName)
+        }
+    }
 }
 
 @Composable

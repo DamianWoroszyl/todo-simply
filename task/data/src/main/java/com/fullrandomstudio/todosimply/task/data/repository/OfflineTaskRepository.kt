@@ -81,7 +81,7 @@ class OfflineTaskRepository @Inject constructor(
 
     override suspend fun setTaskDone(taskId: Long, done: Boolean) {
         appCoroutineScope.launch {
-            val finishDate = if(done) {
+            val finishDate = if (done) {
                 ZonedDateTime.now().toUtcSameInstant()
             } else {
                 null

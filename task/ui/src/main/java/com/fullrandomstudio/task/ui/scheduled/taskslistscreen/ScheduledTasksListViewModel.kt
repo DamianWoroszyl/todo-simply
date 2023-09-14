@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.fullrandomstudio.core.ui.effect.EffectStateFlow
+import com.fullrandomstudio.core.ui.effect.MutableEffectStateFlow
 import com.fullrandomstudio.core.ui.navigation.NavigationStateFlow
 import com.fullrandomstudio.task.model.DateRange
 import com.fullrandomstudio.task.ui.common.EditTask
@@ -11,7 +12,8 @@ import com.fullrandomstudio.task.ui.edit.TaskEditArgs
 import com.fullrandomstudio.task.ui.list.item.TaskAction
 import com.fullrandomstudio.task.ui.list.item.TaskListItemUiState
 import com.fullrandomstudio.task.ui.list.item.TasksListItem
-import com.fullrandomstudio.task.ui.scheduled.effect.DeleteTaskEffect
+import com.fullrandomstudio.task.ui.scheduled.taskslistscreen.effect.DeleteTaskEffect
+import com.fullrandomstudio.task.ui.scheduled.taskslistscreen.effect.ScheduledTasksListScreenEffect
 import com.fullrandomstudio.todosimply.task.domain.DeleteTaskUseCase
 import com.fullrandomstudio.todosimply.task.domain.GetScheduledTasksUseCase
 import com.fullrandomstudio.todosimply.task.domain.SetTaskDoneUseCase
@@ -33,12 +35,13 @@ class ScheduledTasksListViewModel @AssistedInject constructor(
     private val getScheduledTasks: GetScheduledTasksUseCase,
     private val setTaskDoneUseCase: SetTaskDoneUseCase,
     val navigationStateFlow: NavigationStateFlow,
-    val effectStateFlow: EffectStateFlow,
     @Assisted private val dateRange: DateRange
 ) : ViewModel() {
 
-    //todo dw finished here - think about moving expanded to composition, we dont want it to be remembered probably?
     private val _expandedTask: MutableStateFlow<Long> = MutableStateFlow(-1L)
+
+    private val _effectStateFlow = MutableEffectStateFlow<ScheduledTasksListScreenEffect>()
+    val effectStateFlow: EffectStateFlow<ScheduledTasksListScreenEffect> = _effectStateFlow
 
     val items: StateFlow<List<TasksListItem>> = getScheduledTasks(dateRange)
         .combine(_expandedTask, ::Pair)
@@ -109,7 +112,7 @@ class ScheduledTasksListViewModel @AssistedInject constructor(
         viewModelScope.launch {
             val result = deleteTaskUseCase.invoke(taskId)
             _expandedTask.value = -1L
-            effectStateFlow.emit(
+            _effectStateFlow.emit(
                 DeleteTaskEffect(
                     taskId = taskId,
                     taskName = result.second

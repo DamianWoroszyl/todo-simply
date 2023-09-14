@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 
 @Composable
+@Deprecated("Just use EffectStateFlow")
 fun CollectNavigationAsFlow(
     navigationStateFlow: NavigationStateFlow,
     autoCollect: Boolean = true,

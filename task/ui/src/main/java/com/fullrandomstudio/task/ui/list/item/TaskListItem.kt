@@ -130,7 +130,7 @@ internal fun TaskListItem(
                 Text(
                     text = state.task.name,
                     style = textStyle,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = Color(state.task.category.color),
                     modifier = Modifier
                         .constrainAs(title) {
                             top.linkTo(parent.top)
@@ -178,7 +178,7 @@ internal fun TaskListItem(
                     AnimatedVisibility(
                         visible = visible,
                         enter = fadeIn() + expandHorizontally(),
-                        exit = fadeOut() + if(horizontally) shrinkHorizontally() else shrinkVertically(),
+                        exit = fadeOut() + if (horizontally) shrinkHorizontally() else shrinkVertically(),
                     ) {
                         TaskActionButton(
                             taskAction = taskAction,

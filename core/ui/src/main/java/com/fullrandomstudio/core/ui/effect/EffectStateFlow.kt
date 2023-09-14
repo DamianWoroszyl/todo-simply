@@ -3,16 +3,23 @@ package com.fullrandomstudio.core.ui.effect
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.LinkedList
-import javax.inject.Inject
 
-class EffectStateFlow @Inject constructor() {
+class MutableEffectStateFlow<T : Effect> : EffectStateFlow<T>() {
+
+    @Synchronized
+    fun emit(command: T) {
+        emit(EffectState.DisplayEffect(command))
+    }
+}
+
+open class EffectStateFlow<T : Effect> {
 
     private val _queue = LinkedList<EffectState.DisplayEffect>()
     private val _state = MutableStateFlow<EffectState>(EffectState.Idle)
     val state: StateFlow<EffectState> = _state
 
     @Synchronized
-    private fun emit(state: EffectState) {
+    protected fun emit(state: EffectState) {
         when (state) {
             is EffectState.DisplayEffect -> if (
                 _queue.isEmpty() && _state.value == EffectState.Idle
@@ -24,15 +31,10 @@ class EffectStateFlow @Inject constructor() {
 
             is EffectState.Idle -> {
                 throw IllegalArgumentException(
-                    "State should be changed to ${EffectState.Idle} only in onDisplayed call"
+                    "State should be changed to ${EffectState.Idle} only in onCollected call"
                 )
             }
         }
-    }
-
-    @Synchronized
-    fun emit(command: Effect) {
-        emit(EffectState.DisplayEffect(command))
     }
 
     @Synchronized
@@ -45,7 +47,7 @@ class EffectStateFlow @Inject constructor() {
         check(
             currentState is EffectState.DisplayEffect &&
                     currentState.id == (state as EffectState.DisplayEffect).id
-        ) { "An effect happened, that shouldn't be a current state" }
+        ) { "An effect happened, that shouldn't be a current state. Current: $currentState || new: $state" }
 
         if (_queue.isEmpty()) {
             _state.value = EffectState.Idle

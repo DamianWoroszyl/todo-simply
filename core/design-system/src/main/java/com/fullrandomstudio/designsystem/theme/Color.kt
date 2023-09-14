@@ -7,7 +7,7 @@ val Transparent = Color(0x00FFFFFF)
 val Debug = Color(0xFF6E9C7B)
 val NotificationLight = Color(0xFF00FFFF)
 
-val md_theme_light_primary = Color(0xFF37474F)
+val md_theme_light_primary = Color(0xFF3D4E57)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)
 val md_theme_light_primaryContainer = Color(0xFF546A75)
 val md_theme_light_onPrimaryContainer = Color(0xFFFFFFFF)
