@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="undo">Cofnij</string>
+
     <string name="task_action_delete">Usuń</string>
     <string name="task_action_duplicate">Duplikuj</string>
     <string name="task_action_schedule">Zaplanuje</string>
@@ -9,4 +11,6 @@
     <string name="save_task">Zapisz</string>
 
     <string name="edit_task_error_empty_name">Nazwa zadania nie może być pusta</string>
+
+    <string name="task_deleted">Zadanie %s usunięte</string>
 </resources>

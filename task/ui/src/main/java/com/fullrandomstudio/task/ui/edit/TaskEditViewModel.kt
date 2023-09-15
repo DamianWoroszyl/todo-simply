@@ -5,14 +5,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fullrandomstudio.core.ui.Navigator
-import com.fullrandomstudio.core.ui.PopBackstack
+import com.fullrandomstudio.core.ui.effect.EffectStateFlow
+import com.fullrandomstudio.core.ui.effect.MutableEffectStateFlow
 import com.fullrandomstudio.task.model.Task
 import com.fullrandomstudio.task.model.TaskAlarm
 import com.fullrandomstudio.task.model.TaskCategory
+import com.fullrandomstudio.task.ui.edit.effect.PopTaskEdit
+import com.fullrandomstudio.task.ui.edit.effect.TaskEditScreenNavigation
+import com.fullrandomstudio.task.ui.edit.effect.TaskPrepareErrorPop
 import com.fullrandomstudio.todosimply.task.domain.GetAllCategoriesUseCase
 import com.fullrandomstudio.todosimply.task.domain.PrepareTaskToEditUseCase
 import com.fullrandomstudio.todosimply.task.domain.SaveTaskUseCase
+import com.fullrandomstudio.todosimply.task.domain.SetTaskDoneUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableSet
@@ -27,20 +31,30 @@ import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
+private const val KEY_SAVED_STATE_NAME = "name"
+private const val KEY_SAVED_STATE_DESCRIPTION = "description"
+private const val KEY_SAVED_STATE_DATE_TIME = "date_time"
+private const val KEY_SAVED_STATE_ALARM = "alarm"
+private const val KEY_SAVED_STATE_CATEGORY = "category"
+
 @Suppress("TooManyFunctions")
 @HiltViewModel
 class TaskEditViewModel @Inject constructor(
     private val prepareTaskToEditUseCase: PrepareTaskToEditUseCase,
     private val saveTaskUseCase: SaveTaskUseCase,
     private val getAllCategoriesUseCase: GetAllCategoriesUseCase,
-    val navigator: Navigator,
-    savedStateHandle: SavedStateHandle
+    private val setTaskDoneUseCase: SetTaskDoneUseCase,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val args: TaskEditArgs = TaskEditArgs(savedStateHandle)
 
-    val taskName: MutableState<String> = mutableStateOf("") // todo persist across process death?
-    val taskDescription: MutableState<String> = mutableStateOf("")
+    val taskName: MutableState<String> = mutableStateOf(
+        savedStateHandle[KEY_SAVED_STATE_NAME] ?: ""
+    )
+    val taskDescription: MutableState<String> = mutableStateOf(
+        savedStateHandle[KEY_SAVED_STATE_DESCRIPTION] ?: ""
+    )
 
     private val _task: MutableStateFlow<Task> = MutableStateFlow(Task.empty(args.scheduled))
     private val _categoryDialogVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -51,6 +65,7 @@ class TaskEditViewModel @Inject constructor(
         MutableStateFlow(
             emptyList<TaskEditValidationError>().toImmutableSet()
         )
+    private val _navigationStateFlow = MutableEffectStateFlow<TaskEditScreenNavigation>()
 
     val task: StateFlow<Task> = _task
     val categoryPickerVisible: StateFlow<Boolean> = _categoryDialogVisible
@@ -58,42 +73,75 @@ class TaskEditViewModel @Inject constructor(
     val datePickerVisible: StateFlow<Boolean> = _datePickerDialogVisible
     val timePickerVisible: StateFlow<Boolean> = _timePickerDialogVisible
     val validationErrors: StateFlow<ImmutableSet<TaskEditValidationError>> = _validationErrors
+    val navigationStateFlow: EffectStateFlow<TaskEditScreenNavigation> = _navigationStateFlow
 
     init {
-        setupCategories()
         setupTask()
-    }
-
-    private fun setupCategories() {
-        viewModelScope.launch {
-            _categories.value = getAllCategoriesUseCase()
-        }
     }
 
     private fun setupTask() {
         viewModelScope.launch {
-            val taskResult: Result<Task> = prepareTaskToEditUseCase(
+            _categories.value = getAllCategoriesUseCase()
+
+            val prepareTaskResult: Result<Task> = prepareTaskToEditUseCase(
                 taskEditType = args.taskEditType,
                 taskId = args.taskId,
                 scheduled = args.scheduled,
                 selectedDate = args.selectedDate,
             )
 
-            taskResult.fold(
+            prepareTaskResult.fold(
                 {
-                    _task.value = it
-                    taskName.value = it.name
-                    taskDescription.value = it.description
+                    _task.value = mergeTaskWithSavedState(it)
+                    updateTaskNameAndDescription(it)
                 },
                 {
-                    // todo show error and go back in later task
+                    _navigationStateFlow.emit(TaskPrepareErrorPop)
                 }
             )
         }
     }
 
+    private fun updateTaskNameAndDescription(task: Task) {
+        if (!savedStateHandle.contains(KEY_SAVED_STATE_NAME)) {
+            taskName.value = task.name
+        }
+        if (!savedStateHandle.contains(KEY_SAVED_STATE_DESCRIPTION)) {
+            taskDescription.value = task.description
+        }
+    }
+
+    private fun mergeTaskWithSavedState(task: Task): Task {
+        val rememberedDateTime: ZonedDateTime? =
+            savedStateHandle.get<String>(KEY_SAVED_STATE_DATE_TIME)
+                ?.let { dateTimeString ->
+                    ZonedDateTime.parse(dateTimeString)
+                }
+        val scheduleDateTime = rememberedDateTime ?: task.scheduleDateTime
+
+        val rememberedAlarm: Boolean = savedStateHandle[KEY_SAVED_STATE_ALARM] ?: true
+        val taskAlarm = if (rememberedAlarm) {
+            createTaskAlarm(
+                taskId = task.id,
+                scheduleDateTime = requireNotNull(scheduleDateTime)
+            )
+        } else {
+            null
+        }
+
+        val rememberedCategoryId: Long = savedStateHandle[KEY_SAVED_STATE_CATEGORY] ?: -1L
+        val category = _categories.value.find { it.id == rememberedCategoryId } ?: task.category
+
+        return task.copy(
+            scheduleDateTime = scheduleDateTime,
+            taskAlarm = taskAlarm,
+            category = category
+        )
+    }
+
     fun onNameChange(value: String) {
         taskName.value = value
+        savedStateHandle[KEY_SAVED_STATE_NAME] = value
 
         if (_validationErrors.value.contains(TaskEditValidationError.EMPTY_NAME)) {
             _validationErrors.value =
@@ -103,6 +151,7 @@ class TaskEditViewModel @Inject constructor(
 
     fun onDescriptionChange(value: String) {
         taskDescription.value = value
+        savedStateHandle[KEY_SAVED_STATE_DESCRIPTION] = value
     }
 
     fun onSaveClick() {
@@ -120,7 +169,7 @@ class TaskEditViewModel @Inject constructor(
 
         viewModelScope.launch {
             saveTaskUseCase(task)
-            navigator.navigate(PopBackstack)
+            _navigationStateFlow.emit(PopTaskEdit)
         }
     }
 
@@ -133,7 +182,11 @@ class TaskEditViewModel @Inject constructor(
     }
 
     fun onDoneClick() {
-        TODO("Not yet implemented")
+        val task = _task.value
+        viewModelScope.launch {
+            setTaskDoneUseCase(task.id, !task.isFinished)
+            _navigationStateFlow.emit(PopTaskEdit)
+        }
     }
 
     fun onAlarmChange() {
@@ -141,11 +194,23 @@ class TaskEditViewModel @Inject constructor(
             val newAlarm: TaskAlarm? = if (task.hasAlarm) {
                 null
             } else {
-                TaskAlarm(0, task.id, requireNotNull(task.scheduleDateTime))
+                createTaskAlarm(
+                    taskId = task.id,
+                    scheduleDateTime = requireNotNull(task.scheduleDateTime)
+                )
             }
+
+            savedStateHandle[KEY_SAVED_STATE_ALARM] = newAlarm != null
 
             task.copy(taskAlarm = newAlarm)
         }
+    }
+
+    private fun createTaskAlarm(
+        taskId: Long,
+        scheduleDateTime: ZonedDateTime
+    ): TaskAlarm {
+        return TaskAlarm(taskId, scheduleDateTime)
     }
 
     fun onCategoryPickerDismiss() {
@@ -153,7 +218,10 @@ class TaskEditViewModel @Inject constructor(
     }
 
     fun onCategorySelected(value: TaskCategory) {
-        _task.update { it.copy(category = value) }
+        _task.update {
+            savedStateHandle[KEY_SAVED_STATE_CATEGORY] = value.id
+            it.copy(category = value)
+        }
     }
 
     fun onCategoryClick() {
@@ -170,15 +238,20 @@ class TaskEditViewModel @Inject constructor(
 
     fun onDateSelected(timestamp: Long) {
         _datePickerDialogVisible.value = false
+
         _task.update {
-            val time = requireNotNull(it.scheduleDateTime?.toLocalTime())
+            val currentScheduleDate = requireNotNull(it.scheduleDateTime?.toLocalTime())
+            val newScheduleDate = ZonedDateTime.ofInstant(
+                Instant.ofEpochMilli(timestamp),
+                ZoneId.systemDefault()
+            )
+                .withHour(currentScheduleDate.hour)
+                .withMinute(currentScheduleDate.minute)
+
+            savedStateHandle[KEY_SAVED_STATE_DATE_TIME] = newScheduleDate.toString()
+
             it.copy(
-                scheduleDateTime = ZonedDateTime.ofInstant(
-                    Instant.ofEpochMilli(timestamp),
-                    ZoneId.systemDefault()
-                )
-                    .withHour(time.hour)
-                    .withMinute(time.minute)
+                scheduleDateTime = newScheduleDate
             )
         }
     }
@@ -193,12 +266,17 @@ class TaskEditViewModel @Inject constructor(
 
     fun onTimeSelected(time: LocalTime) {
         _timePickerDialogVisible.value = false
+
         _task.update {
+            val newScheduleDate = requireNotNull(it.scheduleDateTime)
+                .truncatedTo(ChronoUnit.DAYS)
+                .withHour(time.hour)
+                .withMinute(time.minute)
+
+            savedStateHandle[KEY_SAVED_STATE_DATE_TIME] = newScheduleDate.toString()
+
             it.copy(
-                scheduleDateTime = requireNotNull(it.scheduleDateTime)
-                    .truncatedTo(ChronoUnit.DAYS)
-                    .withHour(time.hour)
-                    .withMinute(time.minute)
+                scheduleDateTime = newScheduleDate
             )
         }
     }

@@ -7,7 +7,6 @@ import java.time.ZonedDateTime
 
 @Entity(tableName = "task_alarm")
 data class TaskAlarmEntity(
-    @ColumnInfo(name = "task_id") val taskId: Long,
-    @ColumnInfo(name = "date_time") val dateTime: ZonedDateTime,
-    @PrimaryKey(autoGenerate = true) val id: Long = 0
+    @PrimaryKey @ColumnInfo(name = "task_id") val taskId: Long,
+    @ColumnInfo(name = "date_time") val dateTime: ZonedDateTime
 )

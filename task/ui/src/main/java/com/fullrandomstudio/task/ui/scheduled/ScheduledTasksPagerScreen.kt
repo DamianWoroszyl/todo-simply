@@ -3,6 +3,7 @@
 package com.fullrandomstudio.task.ui.scheduled
 
 import android.app.Activity
+import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,7 +17,13 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -26,17 +33,25 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.fullrandomstudio.core.ui.CollectNavigation
+import com.fullrandomstudio.core.ui.effect.CollectEffectAsFlow
+import com.fullrandomstudio.core.ui.navigation.CollectNavigationAsFlow
 import com.fullrandomstudio.designsystem.theme.TodoSimplyTheme
+import com.fullrandomstudio.designsystem.theme.component.SnackbarState
+import com.fullrandomstudio.designsystem.theme.component.TdsSnackbarHost
 import com.fullrandomstudio.task.model.DateRange
 import com.fullrandomstudio.task.ui.common.EditTask
 import com.fullrandomstudio.task.ui.edit.TaskEditArgs
-import com.fullrandomstudio.task.ui.scheduled.ScheduledTasksListViewModel.ScheduledTasksListViewModelAssistedFactory
+import com.fullrandomstudio.task.ui.scheduled.effect.DeleteTaskEffect
+import com.fullrandomstudio.task.ui.scheduled.taskslistscreen.ScheduledTasksListScreen
+import com.fullrandomstudio.task.ui.scheduled.taskslistscreen.ScheduledTasksListViewModel
+import com.fullrandomstudio.task.ui.scheduled.taskslistscreen.ScheduledTasksListViewModel.ScheduledTasksListViewModelAssistedFactory
 import com.fullrandomstudio.todosimply.task.ui.R
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.components.ActivityComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun ScheduledTasksPagerScreen(
@@ -48,13 +63,21 @@ fun ScheduledTasksPagerScreen(
         viewModel.pageCount
     }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+    val context: Context = LocalContext.current
+
     ScheduledTasksPagerScreen(
         pagerState = pagerState,
+        snackbarHostState = snackbarHostState,
         onAddTaskClick = { viewModel.onAddTaskClick(pagerState.currentPage) },
         pageScreenProvider = { page ->
             val dateRange: DateRange = viewModel.dateRangeForPage(page)
             ScheduledTasksListScreen(
                 onEditTask = onEditTask,
+                onShowDeleteSnackbar = { taskId, taskName ->
+                    viewModel.onShowDeleteSnackbar(taskId, taskName)
+                },
                 viewModel = viewModel(
                     key = dateRange.toString(),
                     factory = scheduledTasksListViewModelProviderFactory(dateRange)
@@ -64,13 +87,60 @@ fun ScheduledTasksPagerScreen(
         modifier = modifier
     )
 
-    CollectNavigation(
-        navigator = viewModel.navigator,
+    CollectNavigationAsFlow(
+        navigationStateFlow = viewModel.navigationStateFlow,
         autoCollect = true,
     ) { _, command ->
         when (command) {
             is EditTask -> onEditTask(command.args)
         }
+    }
+
+    CollectEffectAsFlow(
+        effectStateFlow = viewModel.effectStateFlow,
+    ) { _, effect ->
+        when (effect) {
+            is DeleteTaskEffect ->
+                showDeleteSnackbar(
+                    context = context,
+                    effect = effect,
+                    coroutineScope = coroutineScope,
+                    snackbarHostState = snackbarHostState
+                ) { viewModel.onTaskDeleteUndoClick(it) }
+        }
+    }
+}
+
+private fun showDeleteSnackbar(
+    context: Context,
+    effect: DeleteTaskEffect,
+    coroutineScope: CoroutineScope,
+    snackbarHostState: SnackbarHostState,
+    onUndoClick: (taskId: Long) -> Unit
+) {
+    val snackbarState = createSnackBarDeleteTaskMessage(context, effect.taskName)
+    coroutineScope.launch {
+        val result = snackbarHostState.showSnackbar(snackbarState)
+        if (result == SnackbarResult.ActionPerformed) {
+            onUndoClick(effect.taskId)
+        }
+    }
+}
+
+@Suppress("MagicNumber")
+private fun createSnackBarDeleteTaskMessage(context: Context, taskName: String): SnackbarVisuals {
+    return SnackbarState(
+        message = context.getString(R.string.task_deleted, "\"${taskName.abbreviate(15)}\""),
+        actionLabel = context.getString(R.string.undo),
+        duration = SnackbarDuration.Long,
+    )
+}
+
+private fun String.abbreviate(maxWidth: Int): String {
+    return if (length < maxWidth) {
+        this
+    } else {
+        this.substring(0, maxWidth).plus("...")
     }
 }
 
@@ -78,6 +148,7 @@ fun ScheduledTasksPagerScreen(
 @Composable
 fun ScheduledTasksPagerScreen(
     pagerState: PagerState,
+    snackbarHostState: SnackbarHostState,
     onAddTaskClick: () -> Unit,
     pageScreenProvider: @Composable (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -98,7 +169,10 @@ fun ScheduledTasksPagerScreen(
                     modifier = Modifier.size(24.dp)
                 )
             }
-        }
+        },
+        snackbarHost = {
+            TdsSnackbarHost(snackbarHostState)
+        },
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -144,8 +218,9 @@ internal fun ScheduledTasksPagerScreenPreview() {
     TodoSimplyTheme {
         ScheduledTasksPagerScreen(
             pagerState = rememberPagerState { 0 },
+            snackbarHostState = remember { SnackbarHostState() },
             onAddTaskClick = {},
-            pageScreenProvider = {}
+            pageScreenProvider = {},
         )
     }
 }

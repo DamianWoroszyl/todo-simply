@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="undo">Undo</string>
+
     <string name="task_action_delete">Delete</string>
     <string name="task_action_duplicate">Duplicate</string>
     <string name="task_action_schedule">Schedule</string>
@@ -9,4 +11,6 @@
     <string name="save_task">Save</string>
 
     <string name="edit_task_error_empty_name">Task name can\'t be empty</string>
+
+    <string name="task_deleted">Task %s deleted</string>
 </resources>

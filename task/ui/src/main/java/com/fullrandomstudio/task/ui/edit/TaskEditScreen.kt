@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@file:OptIn(ExperimentalLayoutApi::class)
 
 package com.fullrandomstudio.task.ui.edit
 
@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -23,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
@@ -31,8 +31,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.fullrandomstudio.core.ui.CollectNavigation
-import com.fullrandomstudio.core.ui.PopBackstack
+import com.fullrandomstudio.core.ui.effect.CollectEffectAsFlow
+import com.fullrandomstudio.core.ui.toast.showToast
 import com.fullrandomstudio.designsystem.theme.TodoSimplyTheme
 import com.fullrandomstudio.designsystem.theme.component.TdsAppBarIconButton
 import com.fullrandomstudio.designsystem.theme.component.TdsClearTopAppBar
@@ -47,6 +47,8 @@ import com.fullrandomstudio.designsystem.theme.token.SeparatorTokens
 import com.fullrandomstudio.designsystem.theme.token.TextFieldTokens
 import com.fullrandomstudio.task.model.Task
 import com.fullrandomstudio.task.model.TaskCategory
+import com.fullrandomstudio.task.ui.edit.effect.PopTaskEdit
+import com.fullrandomstudio.task.ui.edit.effect.TaskPrepareErrorPop
 import com.fullrandomstudio.todosimply.task.ui.R
 import com.fullrandomstudio.todosimply.util.formatDateLocalized
 import com.fullrandomstudio.todosimply.util.formatTimeLocalized
@@ -55,8 +57,6 @@ import kotlinx.collections.immutable.toImmutableSet
 import java.time.LocalTime
 import com.fullrandomstudio.todosimply.common.R as CommonR
 
-// todo use remember saveable:
-//  https://developer.android.com/jetpack/compose/state
 @Composable
 fun TaskEditScreen(
     onPop: () -> Unit,
@@ -69,16 +69,22 @@ fun TaskEditScreen(
     val datePickerVisible by viewModel.datePickerVisible.collectAsStateWithLifecycle()
     val timePickerVisible by viewModel.timePickerVisible.collectAsStateWithLifecycle()
     val validationErrors by viewModel.validationErrors.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
-    CollectNavigation(
-        navigator = viewModel.navigator
+    CollectEffectAsFlow(
+        effectStateFlow = viewModel.navigationStateFlow
     ) { _, command ->
         when (command) {
-            PopBackstack -> onPop()
+            PopTaskEdit -> onPop()
+            TaskPrepareErrorPop -> {
+                showToast(context, context.getString(CommonR.string.something_went_wrong))
+                onPop()
+            }
         }
     }
 
     TaskEditScreen(
+        doneVisible = task.exists(),
         onSaveClick = { viewModel.onSaveClick() },
         onBackClick = onPop,
         onDoneClick = { viewModel.onDoneClick() },
@@ -127,6 +133,7 @@ fun TaskEditScreen(
 
 @Composable
 fun TaskEditScreen(
+    doneVisible: Boolean,
     onSaveClick: () -> Unit,
     onBackClick: () -> Unit,
     onDoneClick: () -> Unit,
@@ -147,6 +154,7 @@ fun TaskEditScreen(
         },
         topBar = {
             ActionsContainer(
+                doneVisible = doneVisible,
                 onBackClick = onBackClick,
                 onDoneClick = onDoneClick,
                 elevated = scrollState.value > 0
@@ -222,6 +230,7 @@ fun EditScreenTimePicker(
 
 @Composable
 private fun ActionsContainer(
+    doneVisible: Boolean,
     onBackClick: () -> Unit,
     onDoneClick: () -> Unit,
     elevated: Boolean
@@ -234,10 +243,12 @@ private fun ActionsContainer(
             )
         },
         actions = {
-            TdsAppBarIconButton(
-                onClick = onDoneClick,
-                iconRes = CommonR.drawable.ic_done
-            )
+            if (doneVisible) {
+                TdsAppBarIconButton(
+                    onClick = onDoneClick,
+                    iconRes = CommonR.drawable.ic_done
+                )
+            }
         },
         elevated = elevated
     )
@@ -359,6 +370,7 @@ private fun TaskEditScreenPreview() {
 
     TodoSimplyTheme {
         TaskEditScreen(
+            doneVisible = true,
             onSaveClick = { },
             onBackClick = { },
             onDoneClick = { },

@@ -1,4 +1,4 @@
-package com.fullrandomstudio.core.ui
+package com.fullrandomstudio.core.ui.navigation
 
 import java.util.UUID
 

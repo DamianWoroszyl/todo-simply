@@ -22,7 +22,6 @@ fun TaskFullView.toDomain(): Task = Task(
 )
 
 fun TaskAlarmEntity.toDomain(): TaskAlarm = TaskAlarm(
-    id = id,
     taskId = taskId,
     alarmDateTime = dateTime,
 )
@@ -55,12 +54,9 @@ internal fun Task.toEntity(): TaskEntity {
     )
 }
 
-internal fun Task.toAlarmEntity(taskId: Long): TaskAlarmEntity? {
-    return taskAlarm?.let {
-        TaskAlarmEntity(
-            taskId = taskId,
-            dateTime = it.alarmDateTime,
-            id = this.taskAlarm?.id ?: 0L,
-        )
-    }
+internal fun TaskAlarm.toEntity(taskId: Long): TaskAlarmEntity {
+    return TaskAlarmEntity(
+        taskId = taskId,
+        dateTime = alarmDateTime
+    )
 }
