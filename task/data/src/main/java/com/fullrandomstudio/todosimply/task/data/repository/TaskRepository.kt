@@ -2,6 +2,7 @@ package com.fullrandomstudio.todosimply.task.data.repository
 
 import com.fullrandomstudio.task.model.DateRange
 import com.fullrandomstudio.task.model.Task
+import com.fullrandomstudio.task.model.TaskAlarm
 import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {
@@ -14,4 +15,5 @@ interface TaskRepository {
     suspend fun undoSoftDeleteTask(taskId: Long)
     suspend fun removeSoftDeletedTasks()
     suspend fun setTaskDone(taskId: Long, done: Boolean)
+    suspend fun setTaskAlarm(taskId: Long, taskAlarm: TaskAlarm?)
 }

@@ -3,6 +3,7 @@ package com.fullrandomstudio.todosimply.task.data.repository
 import com.fullrandomstudio.task.model.DateRange
 import com.fullrandomstudio.task.model.ISO_ZONED_DATE_TIME_FORMATTER
 import com.fullrandomstudio.task.model.Task
+import com.fullrandomstudio.task.model.TaskAlarm
 import com.fullrandomstudio.task.model.toUtcSameInstant
 import com.fullrandomstudio.todosimply.common.coroutine.ApplicationCoroutineScope
 import com.fullrandomstudio.todosimply.common.coroutine.Dispatcher
@@ -42,13 +43,11 @@ class OfflineTaskRepository @Inject constructor(
         val taskEntity = task.toEntity()
         val taskId: Long = appCoroutineScope.async {
             val taskId = taskDao.insert(taskEntity)
-            taskAlarmDao.deleteForTask(taskId)
-            task.toAlarmEntity(taskId)?.let { taskAlarmDao.insert(it) }
+            setTaskAlarm(taskId, task.taskAlarm)
             taskId
         }.await()
 
         return@withContext taskId
-        // todo in later tasks - schedule/reschedule alarm
     }
 
     override suspend fun getTask(taskId: Long): Task? = withContext(ioDispatcher) {
@@ -88,6 +87,14 @@ class OfflineTaskRepository @Inject constructor(
             }?.toLocalDateTime()
 
             taskDao.setTaskFinishDateTime(taskId, finishDate)
+        }.join()
+    }
+
+    override suspend fun setTaskAlarm(taskId: Long, taskAlarm: TaskAlarm?) {
+        appCoroutineScope.launch {
+            taskAlarmDao.deleteForTask(taskId)
+            taskAlarm?.toEntity(taskId)?.let { taskAlarmDao.insert(it) }
+            //todo schedule / reschedule task alarm
         }.join()
     }
 }

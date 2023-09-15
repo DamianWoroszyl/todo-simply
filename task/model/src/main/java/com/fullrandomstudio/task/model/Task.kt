@@ -33,7 +33,7 @@ data class Task(
             creationDateTimeUtc = LocalDateTime.now(),
             scheduleDateTime = if (scheduled) ZonedDateTime.now() else null,
             finishDateTimeUtc = null,
-            taskAlarm = if (scheduled) TaskAlarm(0, 0, ZonedDateTime.now()) else null,
+            taskAlarm = if (scheduled) TaskAlarm(0L, ZonedDateTime.now()) else null,
             softDeleted = false,
             id = 0
         )

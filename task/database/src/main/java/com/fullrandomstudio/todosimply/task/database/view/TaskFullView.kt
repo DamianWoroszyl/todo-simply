@@ -17,8 +17,7 @@ import com.fullrandomstudio.todosimply.task.database.entity.TaskEntity
             task_category.color AS task_category_color,
             task_category.is_default AS task_category_is_default,
             task_alarm.task_id AS alarm_task_id,
-            task_alarm.date_time AS alarm_date_time,
-            task_alarm.id AS alarm_id
+            task_alarm.date_time AS alarm_date_time
         FROM task
         INNER JOIN task_category ON task.category_id = task_category.id 
         LEFT OUTER JOIN task_alarm ON task.id = task_alarm.task_id

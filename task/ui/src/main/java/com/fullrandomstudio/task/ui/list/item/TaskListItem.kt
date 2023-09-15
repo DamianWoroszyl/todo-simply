@@ -191,8 +191,6 @@ internal fun TaskListItem(
     }
 }
 
-// TODO use local providers for text? I have two custom colors -
-// lighter and darker modifications of primary especially for task action icons
 @Composable
 internal fun TaskActionButton(
     taskAction: TaskAction,
@@ -289,7 +287,7 @@ internal fun AlarmToggleButtonPreview() {
 
 @Preview
 @Composable
-private fun TaskListItemPreviewTodo() {
+private fun TaskListItemPreviewUnfinished() {
     val state = previewTodoTaskUiState()
     TodoSimplyTheme {
         TaskListItem(
@@ -304,7 +302,7 @@ private fun TaskListItemPreviewTodo() {
 
 @Preview
 @Composable
-private fun TaskListItemPreviewDone() {
+private fun TaskListItemPreviewFinished() {
     val state = previewDoneTaskUiState()
     TodoSimplyTheme {
         TaskListItem(

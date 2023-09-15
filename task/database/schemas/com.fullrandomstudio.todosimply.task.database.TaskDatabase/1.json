@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "16da58308471f18fa54fb1028b7132d8",
+    "identityHash": "7015344e297f442816c3e45a24d77ac0",
     "entities": [
       {
         "tableName": "task",
@@ -74,7 +74,7 @@
       },
       {
         "tableName": "task_alarm",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`task_id` INTEGER NOT NULL, `date_time` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`task_id` INTEGER NOT NULL, `date_time` TEXT NOT NULL, PRIMARY KEY(`task_id`))",
         "fields": [
           {
             "fieldPath": "taskId",
@@ -87,18 +87,12 @@
             "columnName": "date_time",
             "affinity": "TEXT",
             "notNull": true
-          },
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
           }
         ],
         "primaryKey": {
-          "autoGenerate": true,
+          "autoGenerate": false,
           "columnNames": [
-            "id"
+            "task_id"
           ]
         },
         "indices": [],
@@ -146,12 +140,12 @@
     "views": [
       {
         "viewName": "task_full_view",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT \n            task.* ,\n            task_category.name AS task_category_name,\n            task_category.id AS task_category_id,\n            task_category.color AS task_category_color,\n            task_category.is_default AS task_category_is_default,\n            task_alarm.task_id AS alarm_task_id,\n            task_alarm.date_time AS alarm_date_time,\n            task_alarm.id AS alarm_id\n        FROM task\n        INNER JOIN task_category ON task.category_id = task_category.id \n        LEFT OUTER JOIN task_alarm ON task.id = task_alarm.task_id"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT \n            task.* ,\n            task_category.name AS task_category_name,\n            task_category.id AS task_category_id,\n            task_category.color AS task_category_color,\n            task_category.is_default AS task_category_is_default,\n            task_alarm.task_id AS alarm_task_id,\n            task_alarm.date_time AS alarm_date_time\n        FROM task\n        INNER JOIN task_category ON task.category_id = task_category.id \n        LEFT OUTER JOIN task_alarm ON task.id = task_alarm.task_id"
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '16da58308471f18fa54fb1028b7132d8')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7015344e297f442816c3e45a24d77ac0')"
     ]
   }
 }

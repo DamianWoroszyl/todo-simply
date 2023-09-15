@@ -12,6 +12,6 @@ data class ExtendedColors(
 
 val LocalExtendedColors: ProvidableCompositionLocal<ExtendedColors> = staticCompositionLocalOf {
     ExtendedColors(
-        separator = md_theme_light_primary
+        separator = Color.Unspecified
     )
 }

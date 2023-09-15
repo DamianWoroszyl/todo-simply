@@ -122,7 +122,6 @@ class TaskEditViewModel @Inject constructor(
         val rememberedAlarm: Boolean = savedStateHandle[KEY_SAVED_STATE_ALARM] ?: true
         val taskAlarm = if (rememberedAlarm) {
             createTaskAlarm(
-                id = task.taskAlarm?.id ?: 0L,
                 taskId = task.id,
                 scheduleDateTime = requireNotNull(scheduleDateTime)
             )
@@ -208,11 +207,10 @@ class TaskEditViewModel @Inject constructor(
     }
 
     private fun createTaskAlarm(
-        id: Long = 0,
         taskId: Long,
         scheduleDateTime: ZonedDateTime
     ): TaskAlarm {
-        return TaskAlarm(id, taskId, scheduleDateTime)
+        return TaskAlarm(taskId, scheduleDateTime)
     }
 
     fun onCategoryPickerDismiss() {

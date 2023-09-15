@@ -61,7 +61,7 @@ class PrepareTaskToEditUseCase @Inject constructor(
             finishDateTimeUtc = null,
             softDeleted = false,
             id = 0,
-            taskAlarm = TaskAlarm(0L, 0L, requireNotNull(scheduleTime))
+            taskAlarm = TaskAlarm(0L, requireNotNull(scheduleTime))
         )
     }
 
@@ -70,7 +70,7 @@ class PrepareTaskToEditUseCase @Inject constructor(
         return originalTask.copy(
             scheduleDateTime = scheduleTime,
             scheduled = true,
-            taskAlarm = TaskAlarm(0L, originalTask.id, scheduleTime)
+            taskAlarm = TaskAlarm(originalTask.id, scheduleTime)
         )
     }
 

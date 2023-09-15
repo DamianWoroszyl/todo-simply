@@ -25,7 +25,7 @@ internal fun previewDoneTaskUiState(): TaskListItemUiState = TaskListItemUiState
             isDefault = false,
             id = 0,
         ),
-        taskAlarm = com.fullrandomstudio.task.model.TaskAlarm(0L, 1L, ZonedDateTime.now().plusDays(5)),
+        taskAlarm = com.fullrandomstudio.task.model.TaskAlarm(1L, ZonedDateTime.now().plusDays(5)),
         softDeleted = false,
         id = 1L,
     ),

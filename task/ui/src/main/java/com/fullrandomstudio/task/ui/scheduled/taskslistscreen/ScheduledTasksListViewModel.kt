@@ -7,6 +7,8 @@ import com.fullrandomstudio.core.ui.effect.EffectStateFlow
 import com.fullrandomstudio.core.ui.effect.MutableEffectStateFlow
 import com.fullrandomstudio.core.ui.navigation.NavigationStateFlow
 import com.fullrandomstudio.task.model.DateRange
+import com.fullrandomstudio.task.model.Task
+import com.fullrandomstudio.task.model.TaskAlarm
 import com.fullrandomstudio.task.ui.common.EditTask
 import com.fullrandomstudio.task.ui.edit.TaskEditArgs
 import com.fullrandomstudio.task.ui.list.item.TaskAction
@@ -16,6 +18,7 @@ import com.fullrandomstudio.task.ui.scheduled.taskslistscreen.effect.DeleteTaskE
 import com.fullrandomstudio.task.ui.scheduled.taskslistscreen.effect.ScheduledTasksListScreenEffect
 import com.fullrandomstudio.todosimply.task.domain.DeleteTaskUseCase
 import com.fullrandomstudio.todosimply.task.domain.GetScheduledTasksUseCase
+import com.fullrandomstudio.todosimply.task.domain.SetTaskAlarmUseCase
 import com.fullrandomstudio.todosimply.task.domain.SetTaskDoneUseCase
 import com.fullrandomstudio.todosimply.task.domain.TaskEditType
 import com.fullrandomstudio.todosimply.utilandroid.stateInViewModel
@@ -34,6 +37,7 @@ class ScheduledTasksListViewModel @AssistedInject constructor(
     private val deleteTaskUseCase: DeleteTaskUseCase,
     private val getScheduledTasks: GetScheduledTasksUseCase,
     private val setTaskDoneUseCase: SetTaskDoneUseCase,
+    private val setTaskAlarmUseCase: SetTaskAlarmUseCase,
     val navigationStateFlow: NavigationStateFlow,
     @Assisted private val dateRange: DateRange
 ) : ViewModel() {
@@ -59,15 +63,22 @@ class ScheduledTasksListViewModel @AssistedInject constructor(
     }
 
     fun onToggleAlarm(taskId: Long) {
-        requireNotNull(
+        val task: Task = requireNotNull(
             items.value.find { it is TaskListItemUiState && it.task.id == taskId }
         ).let {
-            val task = it as TaskListItemUiState
-            if (task.task.isFinished) {
+            (it as TaskListItemUiState).task
+        }
+
+        viewModelScope.launch {
+            if (task.isFinished) {
                 // ignore
             } else {
-            // taskRepository.set
-                TODO("Not yet implemented")
+                val newAlarm = if (task.hasAlarm) {
+                    null
+                } else {
+                    TaskAlarm(taskId, requireNotNull(task.scheduleDateTime))
+                }
+                setTaskAlarmUseCase(taskId, newAlarm)
             }
         }
     }
